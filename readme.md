@@ -1,6 +1,6 @@
 # ScamAppDetect
 
-恶意 APK 检测工具，采用 androguard 库进行分析匹配是否含有恶意APK特征。
+恶意钱包 APK 检测工具，采用 androguard 库进行分析匹配是否含有恶意APK特征。
 
 ## 安装
 
@@ -35,8 +35,10 @@ python3 -m pip install ./utils/androguard-4.1.1-py3-none-any.whl
 deactivate
 ```
 
-
 ## 运行脚本
 ```shell
 python3 runScamAppScan.py
 ```
+
+## APK 存放
+可以放入多个待检测的APK到apkStore目录，项目会自动批量检测。
