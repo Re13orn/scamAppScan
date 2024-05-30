@@ -35,11 +35,10 @@ python3 -m pip install ./utils/androguard-4.1.1-py3-none-any.whl
 deactivate
 ```
 
-
 ## 运行脚本
 ```shell
 python3 runScamAppScan.py
 ```
 
-## 恶意APK
-待检测的APK可以放入多个到apkStore，会自动批量检测。
+## APK 存放
+可以放入多个待检测的APK到apkStore目录，项目会自动批量检测。
