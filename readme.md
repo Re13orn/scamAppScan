@@ -11,7 +11,7 @@
 只有一个第三方依赖库，`whl`文件放在了utils目录
 
 ```shell
-python3 -m pip install ./utils/androguard-4.1.1-py3-none-any.whl
+python3 -m pip install ./utils/androguard-4.1.1-py3-none-any.whl -i https://pypi.tuna.tsinghua.edu.cn/simple
 ```
 
 如果你担心污染可以考虑使用虚拟环境。
