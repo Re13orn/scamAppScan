@@ -1,0 +1,116 @@
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 80%;
+    height: 80%;
+    overflow: auto;
+    /* 允许整个模态窗口滚动 */
+    background-color: rgba(0, 0, 0, 0.4);
+}
+
+.modal-content {
+    background-color: #676161;
+    margin: 5% auto;
+    /* 调整为更小的上边距 */
+    padding: 20px;
+    border: 1px solid #888;
+    width: 60%;
+    /* 缩小宽度 */
+    height: 80%;
+    /* 设置高度 */
+    overflow-y: auto;
+    /* 在内容区域添加滚动条 */
+}
+
+.close {
+    color: #3da039;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.result-item {
+    font-size: 16px;
+    padding: 5px 0;
+    border-bottom: 1px solid #ddd;
+}
+
+.result-item:last-child {
+    border-bottom: none;
+}
+
+.basic-info {
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 20px;
+}
+
+.label {
+    color: black;
+    /* 标签颜色为黑色 */
+}
+
+.value {
+    color: green;
+    /* 值的颜色为绿色 */
+}
+
+.match-rule-label,
+.match-value-label,
+.accuracy-label {
+    color: black;
+    /* 标签颜色 */
+}
+
+.match-rule-value {
+    color: blue;
+    /* Match Rule值的颜色 */
+}
+
+.match-value-value {
+    color: green;
+    /* Match Value值的颜色 */
+}
+
+.accuracy-value {
+    color: red;
+    /* Accuracy值的颜色 */
+}
+
+.label {
+    font-weight: bold;
+    /* 加粗标签 */
+}
+
+.value {
+    font-style: italic;
+    /* 倾斜值的文本 */
+}
+
+#uploadFile {
+    display: none;
+    /* 隐藏原始的文件输入元素 */
+}
+
+.fileUpload {
+    cursor: pointer;
+    /* 添加手型光标 */
+    background-color: #f8f9fa;
+    /* 背景色 */
+    border: 1px solid #ccc;
+    /* 边框 */
+    padding: 10px 20px;
+    /* 内边距 */
+    text-align: center;
+    /* 文本居中 */
+}

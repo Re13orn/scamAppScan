@@ -1,0 +1,4 @@
+issue, severity, confidence, filename, location, sample, description, url
+ted in the target application",https://github.com/doyensec/electronegativity/wiki/CSP_GLOBAL_CHECK
+LIMIT_NAVIGATION_GLOBAL_CHECK,"HIGH","CERTAIN","N/A","0:0",N/A,"Missing navigation limits using .on new-window and will-navigate events",https://github.com/doyensec/electronegativity/wiki/LIMIT_NAVIGATION_GLOBAL_CHECK
+PERMISSION_REQUEST_HANDLER_GLOBAL_CHECK,"MEDIUM","CERTAIN","N/A","0:0",N/A,"Missing PermissionRequestHandler to limit specific permissions (e.g. openExternal) in response to events from particular origins.",https://github.com/doyensec/electronegativity/wiki/PERMISSION_REQUEST_HANDLER_GLOBAL_CHECK

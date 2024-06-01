@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Scam App Scan.">
+    <meta name="author" content="Ajin Abraham">
+    <title>Scam Apk Scan</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/adminlte.min.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/all.min.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='/css/spinner.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/home.css') }}">
+    <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700" rel="stylesheet">
+</head>
+
+<div class="site-wrapper">
+
+
+
+    <div class="site-wrapper-inner">
+        <div class="cover-container">
+            <div class="masthead clearfix">
+                <div align="center" class="inner"></div>
+            </div>
+            <div class="inner cover">
+                <div style="opacity: 0; visibility: hidden;" id="drop">
+                    <div id="textnode" style="font-size: 42px;">Drop anywhere!</div>
+                </div>
+                <br>
+                <form id="upload_form" enctype="multipart/form-data" method="post">
+                    <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token() }}">
+                    <label for="uploadFile" class="fileUpload btn btn-default btn-lg">
+                      <span class="fas fa-cloud-upload-alt"></span> Upload &amp; Analyze
+                    </label>
+                    <input type="file" name="file" id="uploadFile" placeholder="Choose File" multiple>
+                    <br>
+                    <small><i>Drag &amp; Drop anywhere!</i></small>
+                    <h5 id="status"></h5>
+                    <progress id="progressBar" value="0" max="100" style="width:300px; visibility:hidden;"></progress>
+                </form>
+                <!-- <form id="upload_form" enctype="multipart/form-data" method="post">
+                    <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token() }}">
+                    <div class="fileUpload btn btn-default btn-lg" id="but">
+                        <input type="file" name="file" id="uploadFile" placeholder="Choose File" multiple>
+                        <span class="fas fa-cloud-upload-alt"></span> Upload &amp; Analyze
+                    </div>
+                    <br>
+                    <small><i>Drag &amp; Drop anywhere!</i></small>
+                    <h5 id="status"></h5>
+                    <progress id="progressBar" value="0" max="100" style="width:300px; visibility:hidden;"></progress>
+                </form> -->
+
+                <!-- <div id="analysisResults" style="display:none;">
+                    <div class="modal-content">
+                        <span class="close">&times;</span>
+                        <div id="resultsContainer"></div>
+                    </div>
+                </div> -->
+                <!-- Results Modal -->
+
+                <div id="resultsModal" class="modal">
+                    <div class="modal-content">
+                        <span class="close">&times;</span>
+                        <div id="basicInfo" class="basic-info"></div>
+                        <!-- APK基本信息展示区 -->
+                        <div id="resultsContainer"></div>
+                        <!-- 其他结果展示区 -->
+                    </div>
+                </div>
+
+
+                <div class="mastfoot">
+                    <!-- <input type="text" id="package" class="form-control" placeholder="Download & Scan by package name"> -->
+                    <div class="inner">
+                        </br>
+                        <p>&copy;2024 Scam App Scan</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="hidden loading">
+        <div class='uil-ring-css' style='transform:scale(0.79);'>
+            <div></div>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/jquery.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/notify.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/bootstrap.bundle.min.js') }}"></script>
+    <script>
+        $(document).ready(function() {
+
+
+            // 处理并展示分析结果的函数
+            function displayResults(data) {
+                var resultContainer = document.getElementById('resultsContainer');
+                resultContainer.innerHTML = ''; // 清空之前的内容
+
+                if (data.status_code === 200) {
+                    try {
+                        var results = JSON.parse(data.result);
+                        if (results.length === 0) { // 检查结果是否为空
+
+                            resultContainer.innerHTML = `
+                            <p><span class="label">No results found. Current rules did not detect this as a malicious app.</span></p>
+                            <p><span class="label">是否恶意App: </span> <span class="value accuracy-value">${data.isScamApp}</span></p>
+                            <p><span class="label">加固方案: </span> <span class="value accuracy-value">${data.shell}</span></p>
+                        `;
+                        } else {
+
+                            var basicInfo = document.getElementById('basicInfo');
+                            var resultsContainer = document.getElementById('resultsContainer');
+
+                            var firstResult = JSON.parse(data.result)[0];
+                            basicInfo.innerHTML = `
+                                <p><span class="label">APK Hash Name: </span> <span class="value">${firstResult.apk_name} (Version: ${firstResult.app_version})</span></p>
+                                <p><span class="label">APK 包: </span> <span class="value">${firstResult.Package_name}</span></p>
+                                <p><span class="label">App 名: </span> <span class="value">${firstResult.app_name}</span></p>
+                                <p><span class="label">是否恶意App: </span> <span class="value accuracy-value">${data.isScamApp}</span></p>
+
+                            `; // 显示基本信息
+                            resultsContainer.innerHTML = ''; // 清空之前的匹配结果内容
+                            JSON.parse(data.result).forEach(function(result) {
+                                var content = `
+                                <div class="result-item">
+                                    <p><span class="label match-rule-label">Match Rule:</span> <span class="value match-rule-value">${result.match_rule}</span></p>
+                                    <p><span class="label match-value-label">Match Value:</span> <span class="value match-value-value">${result.match_value}</span></p>
+                                    <p><span class="label accuracy-label">信心值 :</span> <span class="value accuracy-value">${result.accuracy}</span></p>
+                                </div>
+                            `;
+                                resultsContainer.innerHTML += content;
+                            });
+                        }
+                        document.getElementById('resultsModal').style.display = 'block'; // 显示结果区域
+                    } catch (e) {
+                        console.error('Error parsing JSON data:', e);
+                        resultContainer.innerHTML = `<p>Error parsing results data.</p>`;
+                    }
+                } else if (data.status_code === 400) {
+                    try {
+                        var results = JSON.parse(data.result);
+                        if (results.length === 0) { // 检查结果是否为空
+
+                            resultContainer.innerHTML = `
+                            <p><span class="label">No results found. Current rules did not detect this as a malicious app.</span></p>
+                            <p><span class="label">是否恶意App: </span> <span class="value accuracy-value">${data.isScamApp}</span></p>
+                            <p><span class="label">加固方案: </span> <span class="value accuracy-value">${data.shell}</span></p>
+                        `;
+                        } else {
+                            var basicInfo = document.getElementById('basicInfo');
+                            var resultsContainer = document.getElementById('resultsContainer');
+
+                            var firstResult = JSON.parse(data.result)[0];
+                            basicInfo.innerHTML = `
+                                <p><span class="label">APK Hash Name: </span> <span class="value">${firstResult.apk_name} (Version: ${firstResult.app_version})</span></p>
+                                <p><span class="label">APK 包: </span> <span class="value">${firstResult.Package_name}</span></p>
+                                <p><span class="label">App 名: </span> <span class="value">${firstResult.app_name}</span></p>
+                                <p><span class="label">是否恶意App: </span> <span class="value accuracy-value">${data.isScamApp}</span></p>
+                                <p><span class="label">加固方案: </span> <span class="value accuracy-value">${data.shell}</span></p>
+                            `; // 显示基本信息
+
+                            resultsContainer.innerHTML = ''; // 清空之前的匹配结果内容
+                            var content = `
+                            <div class="result-item">
+                                <p><span class="label accuracy-value">当前规则库未匹配到恶意App信息，不代表安全Apk !!</span></p>
+                            </div>
+                            `;
+                            resultContainer.innerHTML += content;
+                        }
+                        document.getElementById('resultsModal').style.display = 'block'; // 显示结果区域
+                    } catch (e) {
+                        console.error('Error parsing JSON data:', e);
+                        resultContainer.innerHTML = `<p>Error parsing results data.</p>`;
+                    }
+                } else {
+                    resultContainer.innerHTML = `<p>Error: ${data.description}</p>`;
+                }
+            }
+
+            // function displayResults(data) {
+            //     if (data.status_code === 200) {
+            //         try {
+            //             var basicInfo = document.getElementById('basicInfo');
+            //             var resultsContainer = document.getElementById('resultsContainer');
+
+            //             var firstResult = JSON.parse(data.result)[0];
+            //             basicInfo.innerHTML = `
+            //                 <p><span class="label">APK Name:</span> <span class="value">${firstResult.apk_name} (Version: ${firstResult.app_version})</span></p>
+            //                 <p><span class="label">Package Name:</span> <span class="value">${firstResult.Package_name}</span></p>
+            //                 <p><span class="label">App Name:</span> <span class="value">${firstResult.app_name}</span></p>
+            //             `; // 显示基本信息
+
+
+            //             resultsContainer.innerHTML = ''; // 清空之前的匹配结果内容
+            //             JSON.parse(data.result).forEach(function(result) {
+            //                 var content = `
+            //                 <div class="result-item">
+            //                     <p><span class="label match-rule-label">Match Rule:</span> <span class="value match-rule-value">${result.match_rule}</span></p>
+            //                     <p><span class="label match-value-label">Match Value:</span> <span class="value match-value-value">${result.match_value}</span></p>
+            //                     <p><span class="label accuracy-label">Accuracy:</span> <span class="value accuracy-value">${result.accuracy}</span></p>
+            //                 </div>
+            //             `;
+            //                 resultsContainer.innerHTML += content;
+            //             });
+
+            //             document.getElementById('resultsModal').style.display = 'block'; // 显示结果模态窗口
+            //         } catch (e) {
+            //             console.error('Error parsing JSON data:', e);
+            //         }
+            //     } else {
+            //         console.error('Error:', data.description);
+            //     }
+            // }
+
+
+            function load_result(url) {
+                hide_loader();
+                var xhr = new XMLHttpRequest();
+                xhr.open('GET', url, true);
+
+                xhr.addEventListener("loadstart", function(evt) {
+                    Notifier.snackbar({
+                        message: "Analysis started! Please wait or check recent scans after sometime.",
+                        duration: 10,
+                    });
+                });
+
+                xhr.addEventListener("load", function(evt) {
+                    if (xhr.status === 200) {
+                        var data = JSON.parse(xhr.responseText);
+                        displayResults(data); // 调用displayResults函数处理并展示数据
+                    } else {
+                        console.error("Error fetching results:", xhr.statusText);
+                    }
+                }, false);
+
+                xhr.send();
+            }
+
+            // Handle file input changes
+            $('input[type=file]').change(function() {
+                $('#status').text(""); // Clear status message
+                if (this.files.length === 0) {
+                    return; // No file selected, do nothing
+                }
+                var files = this.files;
+                if (document.location.host === 'mobsf.live') {
+
+                } else {
+                    $('#uploadFile').hide(); // Hide file input for all other hosts
+                    handleFiles(files);
+                }
+            });
+
+            // Full Screen Drag & Drop File Upload
+            window.addEventListener("dragover", function(e) {
+                e.preventDefault(); // Prevent default behavior
+            });
+
+            window.addEventListener("drop", function(e) {
+                e.preventDefault();
+                $('#drop').css({
+                    visibility: 'hidden',
+                    opacity: 0
+                });
+                $('#textnode').css('font-size', '42px');
+                if (e.dataTransfer.files.length > 0) {
+                    handleFiles(e.dataTransfer.files);
+                }
+            });
+
+            // Upload and handle files
+            function handleFiles(files) {
+                Array.from(files).forEach(uploadFile);
+            }
+
+            function uploadFile(file) {
+                if (!isValidExt(file.name) || !isValidMime(file.type)) {
+                    return; // Stop if invalid file
+                }
+                $('#progressBar').css('visibility', 'visible'); // Show progress bar
+                var formData = new FormData();
+                formData.append("file", file);
+
+                $.ajax({
+                    url: '/api/upload',
+                    type: 'POST',
+                    data: formData,
+                    contentType: false,
+                    processData: false,
+                    beforeSend: function(xhr) {
+                        xhr.setRequestHeader("X-CSRFToken", "{{ csrf_token() }}");
+                    },
+                    xhr: function() {
+                        var xhr = new XMLHttpRequest();
+                        xhr.upload.addEventListener("progress", progressHandler, false);
+                        xhr.addEventListener("load", completeHandler, false);
+                        xhr.addEventListener("error", errorHandler, false);
+                        xhr.addEventListener("abort", abortHandler, false);
+                        return xhr;
+                    },
+                    success: function(data) {
+                        if (data.status === 'success') {
+                            // load_result(data.analyzer + '/' + data.hash);
+                        } else {
+                            hide_loader();
+                            $('#status').text(data.description);
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        hide_loader();
+                        $('#status').text("Upload Failed!");
+                    }
+                });
+            }
+
+            // Is valid file extensions
+            function isValidExt(file_name) {
+                var val = file_name.toLowerCase();
+                var regex = new RegExp("^(.{1,300}?)\\.(apk|apks|xapk)$");
+                val = val.replace(/^.*[\\\/]/, '');
+                if (!regex.test(val)) {
+                    document.getElementById('status').innerText = "Please upload APK only!";
+                    return false;
+                }
+                return true;
+            }
+
+            // Is allowed mimetype
+            function isValidMime(file_mime) {
+                if (file_mime.length < 1)
+                // bypass if mime is not available
+                    return true;
+                var supported = ['application/octet-stream', 'application/vnd.android.package-archive', 'application/x-zip-compressed', 'binary/octet-stream', 'application/java-archive', 'application/iphone', 'application/octet-stream', 'application/x-itunes-ipa', 'application/x-zip-compressed', 'application/x-ar', 'text/vnd.a', 'binary/octet-stream', 'application/zip', 'application/octet-stream', 'application/x-zip-compressed', 'binary/octet-stream', 'application/octet-stream', 'application/vns.ms-appx', 'application/x-zip-compressed', ];
+                if (supported.indexOf(file_mime) > -1)
+                    return true;
+                document.getElementById('status').innerText = "MIME type (" + file_mime + ") is not supported!";
+                return false;
+            }
+
+
+            // Utility functions for UI
+            function show_loader() {
+                $('.loading').removeClass('hidden');
+            }
+
+            function hide_loader() {
+                $('.loading').addClass('hidden');
+            }
+
+            function progressHandler(event) {
+                var percent = (event.loaded / event.total) * 100;
+                console.log("Uploaded... " + Math.round(percent) + "%");
+                $('#progressBar').val(Math.round(percent));
+                $('#status').text(Math.round(percent) + "% Uploaded...");
+            }
+
+            function completeHandler(event) {
+                $('#status').text("Upload successful, analysis pending...");
+
+                var data = JSON.parse(event.target.responseText);
+                if (data.status === 'success') {
+                    load_result(data.analyzer + '/' + data.hash + '/');
+                } else {
+                    $('#status').text(data.description);
+                }
+            }
+
+            function errorHandler(event) {
+                $('#status').text("Upload Failed!");
+            }
+
+            function abortHandler(event) {
+                $('#status').text("Upload Aborted!");
+            }
+        });
+        document.addEventListener("DOMContentLoaded", function() {
+            // 获取关闭按钮
+            var closeButton = document.querySelector('.close');
+            // 获取模态框元素
+            var modal = document.getElementById('resultsModal');
+
+            // 当点击关闭按钮时，隐藏模态框
+            closeButton.addEventListener('click', function() {
+                modal.style.display = 'none';
+                // 刷新页面
+                location.reload();
+            });
+        });
+    </script>
+    </body>
+
+</html>
+
+</html>
