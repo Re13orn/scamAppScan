@@ -35,7 +35,7 @@ source .venv/bin/activate
 
 **在虚拟环境下安装模块**
 ```shell
-python3 -m pip install ./utils/androguard-4.1.1-py3-none-any.whl
+python3 -m pip install ./utils/androguard-4.1.1-py3-none-any.whl -i https://pypi.tuna.tsinghua.edu.cn/simple
 ```
 
 **退出虚拟环境**
