@@ -2,7 +2,7 @@
 
 后台采用了 Mosb 的前端，可以点击或者拖拽APK 文件到服务端进行分析。
 
-![Example](./docs/web_example_1.jpg)
+![Example](../docs/web_example_1.jpg)
 
 ## 安装第三方模块
 ```shell
@@ -24,4 +24,4 @@ python3 -m pip install -r requirement.txt -i https://pypi.tuna.tsinghua.edu.cn/s
 python3 -m gunicorn --preload -w 4 -b 127.0.0.1:8000 -k gevent --timeout 100 -D --access-logfile access.log --error-logfile error.log run:app
 ```
 
-![Example](./docs/web_example_2.jpg)
+![Example](../docs/web_example_2.jpg)
