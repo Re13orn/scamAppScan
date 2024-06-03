@@ -17,9 +17,6 @@
 </head>
 
 <div class="site-wrapper">
-
-
-
     <div class="site-wrapper-inner">
         <div class="cover-container">
             <div class="masthead clearfix">
@@ -41,36 +38,16 @@
                     <h5 id="status"></h5>
                     <progress id="progressBar" value="0" max="100" style="width:300px; visibility:hidden;"></progress>
                 </form>
-                <!-- <form id="upload_form" enctype="multipart/form-data" method="post">
-                    <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token() }}">
-                    <div class="fileUpload btn btn-default btn-lg" id="but">
-                        <input type="file" name="file" id="uploadFile" placeholder="Choose File" multiple>
-                        <span class="fas fa-cloud-upload-alt"></span> Upload &amp; Analyze
-                    </div>
-                    <br>
-                    <small><i>Drag &amp; Drop anywhere!</i></small>
-                    <h5 id="status"></h5>
-                    <progress id="progressBar" value="0" max="100" style="width:300px; visibility:hidden;"></progress>
-                </form> -->
-
-                <!-- <div id="analysisResults" style="display:none;">
-                    <div class="modal-content">
-                        <span class="close">&times;</span>
-                        <div id="resultsContainer"></div>
-                    </div>
-                </div> -->
-                <!-- Results Modal -->
 
                 <div id="resultsModal" class="modal">
                     <div class="modal-content">
-                        <span class="close">&times;</span>
+                        <span class="close" style="color: red;">&times;</span>
                         <div id="basicInfo" class="basic-info"></div>
                         <!-- APK基本信息展示区 -->
                         <div id="resultsContainer"></div>
                         <!-- 其他结果展示区 -->
                     </div>
                 </div>
-
 
                 <div class="mastfoot">
                     <!-- <input type="text" id="package" class="form-control" placeholder="Download & Scan by package name"> -->
@@ -176,47 +153,15 @@
                     } catch (e) {
                         console.error('Error parsing JSON data:', e);
                         resultContainer.innerHTML = `<p>Error parsing results data.</p>`;
+                        // 刷新页面
+                        location.reload();
                     }
                 } else {
                     resultContainer.innerHTML = `<p>Error: ${data.description}</p>`;
+                    // 刷新页面
+                    location.reload();
                 }
             }
-
-            // function displayResults(data) {
-            //     if (data.status_code === 200) {
-            //         try {
-            //             var basicInfo = document.getElementById('basicInfo');
-            //             var resultsContainer = document.getElementById('resultsContainer');
-
-            //             var firstResult = JSON.parse(data.result)[0];
-            //             basicInfo.innerHTML = `
-            //                 <p><span class="label">APK Name:</span> <span class="value">${firstResult.apk_name} (Version: ${firstResult.app_version})</span></p>
-            //                 <p><span class="label">Package Name:</span> <span class="value">${firstResult.Package_name}</span></p>
-            //                 <p><span class="label">App Name:</span> <span class="value">${firstResult.app_name}</span></p>
-            //             `; // 显示基本信息
-
-
-            //             resultsContainer.innerHTML = ''; // 清空之前的匹配结果内容
-            //             JSON.parse(data.result).forEach(function(result) {
-            //                 var content = `
-            //                 <div class="result-item">
-            //                     <p><span class="label match-rule-label">Match Rule:</span> <span class="value match-rule-value">${result.match_rule}</span></p>
-            //                     <p><span class="label match-value-label">Match Value:</span> <span class="value match-value-value">${result.match_value}</span></p>
-            //                     <p><span class="label accuracy-label">Accuracy:</span> <span class="value accuracy-value">${result.accuracy}</span></p>
-            //                 </div>
-            //             `;
-            //                 resultsContainer.innerHTML += content;
-            //             });
-
-            //             document.getElementById('resultsModal').style.display = 'block'; // 显示结果模态窗口
-            //         } catch (e) {
-            //             console.error('Error parsing JSON data:', e);
-            //         }
-            //     } else {
-            //         console.error('Error:', data.description);
-            //     }
-            // }
-
 
             function load_result(url) {
                 hide_loader();
@@ -236,6 +181,8 @@
                         displayResults(data); // 调用displayResults函数处理并展示数据
                     } else {
                         console.error("Error fetching results:", xhr.statusText);
+                        // 刷新页面
+                        location.reload();
                     }
                 }, false);
 
