@@ -21,7 +21,7 @@ python3 -m pip install -r requirement.txt -i https://pypi.tuna.tsinghua.edu.cn/s
 # 指定进程和端口号： -w: 表示进程（worker）。 -b：表示绑定ip地址和端口号（bind）。 -D: 后台运行
 # gevent 异步工作模式
 
-python3 -m gunicorn --preload -w 4 -b 127.0.0.1:8000 -k gevent --timeout 100 -D --access-logfile access.log --error-logfile error.log run:app
+python3 -m gunicorn --preload -w 4 -b 0.0.0.0:8000 -k gevent --timeout 100 -D --access-logfile access.log --error-logfile error.log run:app
 ```
 **结果展示**
 
