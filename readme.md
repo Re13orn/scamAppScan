@@ -2,6 +2,8 @@
 
 👊**恶意钱包 APK 检测工具，采用 androguard 库进行分析匹配是否含有恶意APK特征。**
 
+![Example](./docs/example_1.jpg)
+
 ## 🌲目录结构
 
 ```shell
@@ -21,8 +23,6 @@
 ## 🚀安装
 
 本项目开发语言版本采用：🐍 Python 3
-
-![Example](./docs/example_1.jpg)
 
 ### 安装第三方依赖
 
