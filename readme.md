@@ -6,6 +6,8 @@
 
 本项目开发语言版本采用：🐍 Python 3
 
+![Example](./docs/example_1.jpg)
+
 ### 安装第三方依赖
 
 只有一个第三方依赖库，`whl`文件放在了utils目录
