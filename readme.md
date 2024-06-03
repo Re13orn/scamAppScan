@@ -2,6 +2,22 @@
 
 👊**恶意钱包 APK 检测工具，采用 androguard 库进行分析匹配是否含有恶意APK特征。**
 
+## 🌲目录结构
+
+```shell
+├── Web                             # Web端，前端采用MobSF的上传模版，后端采用Flask
+├── apkStore                        # 恶意APK存放此文件夹
+├── config.py                       # 配置文件，包括匹配规则，APK壳检测规则等
+├── docs                            # 文档相关文件
+├── readme.md                       # 本说明文档
+├── report                          # 报告目录，运行本项目自动生成
+├── runScamAppScan.py               # 入口文件
+└── utils
+    ├── apkAnalyzer.py              # APK分析模块
+    ├── apkShellDetector.py         # APK壳检测模块
+    └── reportGenerator.py          # 报告导出模块
+```
+
 ## 🚀安装
 
 本项目开发语言版本采用：🐍 Python 3
