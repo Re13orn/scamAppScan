@@ -11,7 +11,7 @@
 ├── docs                            # 文档相关文件
 ├── readme.md                       # 本说明文档
 ├── report                          # 报告目录，运行本项目自动生成
-├── runScamAppScan.py               # 入口文件
+├── runScamAppScan.py               # 主文件，入口文件
 └── utils
     ├── apkAnalyzer.py              # APK分析模块
     ├── apkShellDetector.py         # APK壳检测模块
