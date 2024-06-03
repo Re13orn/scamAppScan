@@ -1,10 +1,10 @@
-# ScamAppDetect
+# ScamAppScan
 
-恶意钱包 APK 检测工具，采用 androguard 库进行分析匹配是否含有恶意APK特征。
+👊**恶意钱包 APK 检测工具，采用 androguard 库进行分析匹配是否含有恶意APK特征。**
 
-## 安装
+## 🚀安装
 
-本项目开发语言版本采用：Python 3
+本项目开发语言版本采用：🐍 Python 3
 
 ### 安装第三方依赖
 
@@ -43,4 +43,5 @@ python3 -m pip install ./utils/androguard-4.1.1-py3-none-any.whl -i https://pypi
 deactivate
 ```
 
-
+## Web 安装和启动
+📝[点击跳转](https://github.com/Re13orn/scamAppScan/blob/main/Web/readme.md)
