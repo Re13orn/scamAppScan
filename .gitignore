@@ -1,5 +1,6 @@
 .DS_Store
-__pycache__
-report
+*__pycache__
+*report
 *_dev
 *.venv/
+*upload

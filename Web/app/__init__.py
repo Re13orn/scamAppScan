@@ -12,6 +12,9 @@ def create_app():
     app = Flask(__name__)
     app.config.from_object(Config)
 
+    app.config['MAX_CONTENT_LENGTH'] = 300 * 1024 * 1024  # 限制为300MB
+
+
     # 初始化 CSRF 保护
     csrf = CSRFProtect(app)
 
