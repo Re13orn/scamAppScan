@@ -23,5 +23,6 @@ python3 -m pip install -r requirement.txt -i https://pypi.tuna.tsinghua.edu.cn/s
 
 python3 -m gunicorn --preload -w 4 -b 127.0.0.1:8000 -k gevent --timeout 100 -D --access-logfile access.log --error-logfile error.log run:app
 ```
+**结果展示**
 
 ![Example](../docs/web_example_2.jpg)
