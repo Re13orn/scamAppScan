@@ -167,13 +167,18 @@ def submitrunscan(apk_hash_filename):
             }), 200
 
 def runApkAnalysis(apk_hash_filename,UPLOAD_PATH,combined_patterns):
+    print("查看是否历史分析...")
     json_filename_path = os.path.join(UPLOAD_PATH,"json",apk_hash_filename+".json")
     if os.path.exists(json_filename_path):
         print(f"Json 数据已存在：{json_filename_path}")
     else:
-        apk_file = os.path.join(UPLOAD_PATH,apk_hash_filename+".apk")
-        shellDetect = APKShellDetector(apk_file, SHELLFEATURE)
-        shell = shellDetect.detect() or "unknown"
+        print("新APK, 开始分析...")
+        apk_file = os.path.join(UPLOAD_PATH, "apk", apk_hash_filename+".apk")
+        try:
+            shellDetect = APKShellDetector(apk_file, SHELLFEATURE)
+            shell = shellDetect.detect() or "unknown"
+        except:
+            shell = "unknown"
         isScamApp = "unknow"
         all_results = []
         status_code = 400

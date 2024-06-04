@@ -1,0 +1,7 @@
+{
+    "status_code": 200,
+    "isScamApp": "true",
+    "result": "[\n    {\n        \"match_rule\": \"a888newapi.xyz\",\n        \"match_value\": \"sfulInit\\nhttp://www.slf4j.org/codes.html#version_mismatch\\nhttpMethod\\nhttpSeeds\\nhttps\\nhttps://api888.a888newapi.xyz/v3api?\\nhttpstatus\\nhttpstatusmessage\\nhybridSignTest\\ni\\niPAddress\\nib0\\nib1\\nib2\\nib3\\nib4\\nib5\\nib6\\nib7\\nic_c\",\n        \"accuracy\": 100,\n        \"apk_name\": \"aef0c8af40de045bfd178349f172350f.apk\",\n        \"app_version\": \"2.12.0\",\n        \"hash\": \"aef0c8af40de045bfd178349f172350f\",\n        \"Package_name\": \"dim.dtoken.dapp\",\n        \"app_name\": \"imToken\"\n    }\n]",
+    "history": [],
+    "shell": "unknow"
+}

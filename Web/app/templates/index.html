@@ -168,13 +168,6 @@
                 hide_loader();
                 var xhr = new XMLHttpRequest();
                 xhr.open('GET', url, true);
-
-                xhr.addEventListener("loadstart", function(evt) {
-                    Notifier.snackbar({
-                        message: "Analysis started! Please wait or check recent scans after sometime.",
-                        duration: 2,
-                    });
-                });
                 xhr.addEventListener("load", function(evt) {
                     if (xhr.status === 200) {
                         var data = JSON.parse(xhr.responseText);
