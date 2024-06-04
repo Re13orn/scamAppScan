@@ -1,5 +1,4 @@
 import csv
-from config import *
 
 
 class ReportGenerator:

@@ -6,7 +6,7 @@ from werkzeug.utils import secure_filename
 import os
 import time
 import json
-from app.utils.config import *
+from app.utils.scamAppScanConfig import *
 from loguru import logger
 from app.utils.apkAnalyzer import APKAnalyzer
 from app.utils.apkShellDetector import APKShellDetector

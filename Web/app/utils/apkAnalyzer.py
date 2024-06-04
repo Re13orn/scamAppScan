@@ -4,7 +4,6 @@ import zipfile
 import hashlib
 from androguard.misc import AnalyzeAPK
 from loguru import logger
-from config import *
 
 
 class APKAnalyzer:

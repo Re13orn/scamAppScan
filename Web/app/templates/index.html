@@ -105,9 +105,9 @@
                             JSON.parse(data.result).forEach(function(result) {
                                 var content = `
                                 <div class="result-item">
-                                    <p><span class="label match-rule-label">Match Rule:</span> <span class="value match-rule-value">${result.match_rule}</span></p>
-                                    <p><span class="label match-value-label">Match Value:</span> <span class="value match-value-value">${result.match_value}</span></p>
-                                    <p><span class="label accuracy-label">信心值 :</span> <span class="value accuracy-value">${result.accuracy}</span></p>
+                                    <p><span class="label match-rule-label">恶意特征:</span> <span class="value match-rule-value">${result.match_rule}</span></p>
+                                    <p><span class="label match-value-label">匹配值:</span> <span class="value match-value-value">${result.match_value}</span></p>
+                                    <p><span class="label accuracy-label">匹配信心度 :</span> <span class="value accuracy-value">${result.accuracy}</span></p>
                                 </div>
                             `;
                                 resultsContainer.innerHTML += content;

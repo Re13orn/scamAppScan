@@ -32,6 +32,7 @@ PATH_PATTERNS = {
 定义恶意域名 信心指数默认为1
 """
 DOMAIN_PATTERNS = {
+    "tokengoodns.com":100,
     "intoken.tw":100,
     "imtoke.net":100,
     "geqianff386.xyz":100,
