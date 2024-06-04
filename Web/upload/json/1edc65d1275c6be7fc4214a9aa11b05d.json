@@ -1,0 +1,7 @@
+{
+    "status_code": 200,
+    "isScamApp": "unknow",
+    "result": "[\n    {\n        \"apk_name\": \"1edc65d1275c6be7fc4214a9aa11b05d.apk\",\n        \"app_version\": \"20.9.10\",\n        \"hash\": \"1edc65d1275c6be7fc4214a9aa11b05d\",\n        \"Package_name\": \"com.zuyjojwk\",\n        \"app_name\": \"imToken\"\n    }\n]",
+    "history": [],
+    "shell": "360 加固"
+}

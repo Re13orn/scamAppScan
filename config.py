@@ -1,4 +1,5 @@
 import os
+import platform
 
 """
 定义恶意路径 信心指数默认为1， 范围1-100，100 信心度最高
@@ -363,6 +364,16 @@ REPORT_DIR = os.path.join(PROJECT_DIR, "report")
 TEMP_DIRECTORY = os.path.join(PROJECT_DIR, "temp_extracted")
 # 恶意 APK 存放目录
 APK_DIRECTORY = os.path.join(PROJECT_DIR, "apkStore")
+# 二进制工具存放目录
+TOOLS_DIR  = os.path.join(PROJECT_DIR, "tools")
+# aapt 工具
+# os_name = platform.system()
+# if os_name == 'Darwin':
+#     AAPT = os.path.join(TOOLS_DIR, "aapt_MacM1")
+# elif os_name == 'Linux':
+#     AAPT = os.path.join(TOOLS_DIR, "aapt_ubuntu_x64")
+# else:
+#     AAPT = "Unknown OS Not Found aapt"
 
 """
 分析上下文范围设置

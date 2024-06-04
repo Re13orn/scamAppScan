@@ -162,8 +162,9 @@
                     location.reload();
                 }
             }
-
-            function load_result(url) {
+            // 获取分析结果
+            function getscanresult(hash) {
+                url = "/api/getscanresult/" + hash + "/"
                 hide_loader();
                 var xhr = new XMLHttpRequest();
                 xhr.open('GET', url, true);
@@ -171,21 +172,56 @@
                 xhr.addEventListener("loadstart", function(evt) {
                     Notifier.snackbar({
                         message: "Analysis started! Please wait or check recent scans after sometime.",
-                        duration: 10,
+                        duration: 2,
                     });
                 });
-
                 xhr.addEventListener("load", function(evt) {
                     if (xhr.status === 200) {
                         var data = JSON.parse(xhr.responseText);
-                        displayResults(data); // 调用displayResults函数处理并展示数据
+                        if (data.status_code === 404) {
+                            setTimeout(
+                                function() {
+                                    getscanresult(hash);
+                                },
+                                2000 // 等待2s
+                            );
+                        } else if (data.status_code === 200) {
+                            displayResults(data); // 调用displayResults函数处理并展示数据
+                        } else {
+                            console.error("Error fetching results:", xhr.statusText);
+                            // Refresh the page
+                            location.reload();
+                        }
                     } else {
                         console.error("Error fetching results:", xhr.statusText);
                         // 刷新页面
                         location.reload();
                     }
                 }, false);
-
+                xhr.send();
+            }
+            // 提交分析请求
+            function submitrunscan(analyzer, hash) {
+                url = analyzer + '/' + hash + '/'
+                hide_loader();
+                var xhr = new XMLHttpRequest();
+                xhr.open('GET', url, true);
+                xhr.addEventListener("loadstart", function(evt) {
+                    Notifier.snackbar({
+                        message: "Analysis started! Please wait or check recent scans after sometime.",
+                        duration: 10,
+                    });
+                });
+                xhr.addEventListener("load", function(evt) {
+                    if (xhr.status === 200) {
+                        var data = JSON.parse(xhr.responseText);
+                        getscanresult(hash); // 调用displayResults函数处理并展示数据
+                    } else {
+                        console.error("Error fetching results:", xhr.statusText);
+                        // 刷新页面
+                        location.reload();
+                    }
+                }, false);
                 xhr.send();
             }
 
@@ -253,7 +289,7 @@
                     },
                     success: function(data) {
                         if (data.status === 'success') {
-                            // load_result(data.analyzer + '/' + data.hash);
+                            // ...
                         } else {
                             hide_loader();
                             $('#status').text(data.description);
@@ -312,7 +348,7 @@
 
                 var data = JSON.parse(event.target.responseText);
                 if (data.status === 'success') {
-                    load_result(data.analyzer + '/' + data.hash + '/');
+                    submitrunscan(data.analyzer, data.hash);
                 } else {
                     $('#status').text(data.description);
                 }

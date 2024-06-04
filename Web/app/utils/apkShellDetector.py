@@ -28,12 +28,12 @@ class APKShellDetector:
         return list(flags)
 
     def detect(self):
-        shell = ""
+        shell = "unknow"
         """检测APK是否使用了加固技术，并打印结果"""
         name_list = self.read_zip_files()
         flags = self.match_shell(name_list)
-        shell = ', '.join(flags)
         if flags:
+            shell = ', '.join(flags)
             print(f"[*] 经过加壳特征库匹配，{self.apk_name} 加壳方案为: {shell}.")
         return shell
 

@@ -8,9 +8,15 @@ class Config(object):
     UPLOAD_FOLDER = pathlib.Path(__file__).parent.joinpath('upload').resolve()
     if not os.path.isdir(UPLOAD_FOLDER):
         os.mkdir(UPLOAD_FOLDER)
-    UPLOAD_FOLDER_TMP = os.path.join(UPLOAD_FOLDER, 'tmp')
-    if not os.path.isdir(UPLOAD_FOLDER_TMP):
-        os.mkdir(UPLOAD_FOLDER_TMP)
+    
+    UPLOAD_FOLDER_JSON = os.path.join(UPLOAD_FOLDER, 'json')
+    if not os.path.isdir(UPLOAD_FOLDER_JSON):
+        os.mkdir(UPLOAD_FOLDER_JSON)
+
+    UPLOAD_FOLDER_APK = os.path.join(UPLOAD_FOLDER, 'apk')
+    if not os.path.isdir(UPLOAD_FOLDER_APK):
+        os.mkdir(UPLOAD_FOLDER_APK)
+    
     
     """
     定义恶意路径 信心指数默认为100， 范围1-100，100 信心度最高

@@ -1,0 +1,7 @@
+{
+    "status_code": 200,
+    "isScamApp": "true",
+    "result": "[\n    {\n        \"match_rule\": \"foxabc.cc\",\n        \"match_value\": \"\\ngetSigBytes\\ngetSignature\\ngetSize\\ngetSuperclass\\ngetTargetException\\nhashCode\\nhookApkPath\\nhttps://cdn.foxabc.cc/wallet/wallet.php\\nimapk\\ninit\\ninitialized\\ninvoke\\nis\\nisAccessible\\nisApkPath\\nisAssignableFrom\\nisBinder\",\n        \"accuracy\": 100,\n        \"apk_name\": \"eb64caceb721d6be901c46a62d22d7a1.apk\",\n        \"app_version\": \"2.14.0\",\n        \"hash\": \"eb64caceb721d6be901c46a62d22d7a1\",\n        \"Package_name\": \"org.redistribute141.app10\",\n        \"app_name\": \"imToken\"\n    }\n]",
+    "history": [],
+    "shell": "unknow"
+}
