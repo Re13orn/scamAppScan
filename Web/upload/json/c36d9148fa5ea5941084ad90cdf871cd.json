@@ -1,0 +1,7 @@
+{
+    "status_code": 200,
+    "isScamApp": "unknow",
+    "result": "[\n    {\n        \"apk_name\": \"c36d9148fa5ea5941084ad90cdf871cd.apk\",\n        \"app_version\": \"R65C33E4F-kitsune\",\n        \"hash\": \"c36d9148fa5ea5941084ad90cdf871cd\",\n        \"Package_name\": \"io.github.huskydg.magisk\",\n        \"app_name\": \"Kitsune Mask\"\n    }\n]",
+    "history": [],
+    "shell": "unknow"
+}
