@@ -131,7 +131,7 @@ def runApkAnalysis(apk_hash_filename,UPLOAD_PATH,combined_patterns,flag=True):
                 
         except Exception as e:
             status_code = 500
-            print(f"runApkAnalysis error:{e}")
+            logger.error(f"runApkAnalysis error:{e}")
 
         json_content = {
                         "status_code": status_code,
