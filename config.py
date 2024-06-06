@@ -32,6 +32,11 @@ PATH_PATTERNS = {
 定义恶意域名 信心指数默认为1
 """
 DOMAIN_PATTERNS = {
+    "jiujiu-speed.com":100,
+    "jiujiuspeed1.com":100,
+    "jjspeed.co":100,
+    "ttpic41.com":100,
+    "soin1de0001aa.com":100,
     "tokengoodns.com":100,
     "intoken.tw":100,
     "imtoke.net":100,

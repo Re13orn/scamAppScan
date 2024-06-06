@@ -1,6 +1,6 @@
 # ScamAppScan
 
-👊**恶意钱包 APK 检测工具，采用 androguard 库进行分析匹配是否含有恶意APK特征。**
+👊**恶意 APK 检测工具，采用 androguard 库进行分析匹配是否含有恶意APK特征。**
 
 ![Example](./docs/example_1.jpg)
 
@@ -9,7 +9,7 @@
 ```shell
 ├── Web                             # Web端，前端采用MobSF的上传模版，后端采用Flask
 ├── apkStore                        # 恶意APK存放此文件夹
-├── config.py                       # 配置文件，包括匹配规则，APK壳检测规则等
+├── config.py                       # 配置文件，包括恶意APK匹配规则，APK加固壳检测规则等
 ├── docs                            # 文档相关文件
 ├── readme.md                       # 本说明文档
 ├── report                          # 报告目录，运行本项目自动生成
