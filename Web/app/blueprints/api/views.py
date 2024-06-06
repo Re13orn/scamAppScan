@@ -32,7 +32,6 @@ def compute_hash(file_path):
     return hash_md5.hexdigest()
 
 
-
 @api_bp.route('/upload', methods=['POST'])
 def upload():
     if 'file' not in request.files:

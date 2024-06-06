@@ -1,0 +1,7 @@
+{
+    "status_code": 200,
+    "isScamApp": "unknow",
+    "result": "[\n    {\n        \"apk_name\": \"2e8f949ec09c1a00c240ee81a370ee7c.apk\",\n        \"app_version\": \"10.29.0-release.0\",\n        \"hash\": \"2e8f949ec09c1a00c240ee81a370ee7c\",\n        \"Package_name\": \"com.tt.x\",\n        \"app_name\": \"X\"\n    }\n]",
+    "history": [],
+    "shell": "unknow"
+}

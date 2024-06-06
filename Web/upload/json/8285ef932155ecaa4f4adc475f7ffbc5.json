@@ -1,0 +1,7 @@
+{
+    "status_code": 200,
+    "isScamApp": "unknow",
+    "result": "[\n    {\n        \"apk_name\": \"8285ef932155ecaa4f4adc475f7ffbc5.apk\",\n        \"app_version\": \"2.2.3\",\n        \"hash\": \"8285ef932155ecaa4f4adc475f7ffbc5\",\n        \"Package_name\": \"com.jiujiu.vpn\",\n        \"app_name\": \"\\u4e45\\u4e45 VPN\"\n    }\n]",
+    "history": [],
+    "shell": "unknow"
+}
