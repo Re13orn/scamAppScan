@@ -1,13 +1,14 @@
 import os
 import csv
+import json
 
 
 class ReportGenerator:
     """
-    报告生成器类，负责导出分析结果到 CSV 文件。
+    报告生成器类，负责导出分析结果到 CSV/JSON 文件。
     """
 
-    def __init__(self, results, filename='results.csv'):
+    def __init__(self, results, filename):
         self.results = results
         self.filename = filename
 
@@ -21,6 +22,14 @@ class ReportGenerator:
             writer.writeheader()
             for result in self.results:
                 writer.writerow(result)
+        print('\033[0;33m', f"[*] Scan finished, Results exported to {self.filename}", '\033[0m')
+
+    def export_to_json(self):
+        """
+        导出分析结果到 JSON 文件。
+        """
+        with open(self.filename, 'w', encoding='utf-8') as jsonfile:
+            json.dump(self.results, jsonfile, indent=4, ensure_ascii=False)
         print('\033[0;33m', f"[*] Scan finished, Results exported to {self.filename}", '\033[0m')
 
 # 使用示例
@@ -42,6 +51,12 @@ if __name__ == '__main__':
     REPORT_DIR = os.path.join(os.path.dirname(__file__), "reporttmp")
     os.makedirs(REPORT_DIR, exist_ok=True)
 
-    filename = os.path.join(REPORT_DIR, time.strftime("%Y%m%d_%H%M%S") + "_results.csv")
-    report_generator = ReportGenerator(result, filename)
-    report_generator.export_to_csv()
+    # 导出 csv 格式报告
+    csv_filename = os.path.join(REPORT_DIR, time.strftime("%Y%m%d_%H%M%S") + "_results.csv")
+    csv_report_generator = ReportGenerator(result, csv_filename)
+    csv_report_generator.export_to_csv()
+
+    # 导出 json 格式报告
+    json_filename = os.path.join(REPORT_DIR, time.strftime("%Y%m%d_%H%M%S") + "_results.json")
+    json_report_generator = ReportGenerator(result, json_filename)
+    json_report_generator.export_to_json()
