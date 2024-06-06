@@ -1,13 +1,12 @@
+import os
 import zipfile
-from config import *
 
 class APKShellDetector:
-    # 加固特征库
-    shell_features = SHELLFEATURE
 
-    def __init__(self, apk_path):
+    def __init__(self, apk_path, shellfeature):
         self.apk_path = apk_path
         self.apk_name = os.path.basename(apk_path)
+        self.shell_features = shellfeature
 
     def read_zip_files(self):
         """打开APK文件并读取其内容列表"""
@@ -32,5 +31,14 @@ class APKShellDetector:
 
 # 使用示例
 if __name__ == '__main__':
-    detector = APKShellDetector("FDFA25B954480A44D2632B0AA2FD2A2F.apk")
+
+    # 加固特征库，完整可从配置文件 config.py 导入
+    SHELLFEATURE = {
+    "libchaosvmp.so": "娜迦",
+    "libddog.so": "娜迦",
+    "libfdog.so": "娜迦",
+    "libjiagu.so": "360 加固",
+    "libexec.so": "爱加密"
+    }
+    detector = APKShellDetector("test.apk", SHELLFEATURE)
     detector.detect()

@@ -1,5 +1,5 @@
+import os
 import csv
-from config import *
 
 
 class ReportGenerator:
@@ -21,4 +21,27 @@ class ReportGenerator:
             writer.writeheader()
             for result in self.results:
                 writer.writerow(result)
-        print(O, f"[*] Scan finished, Results exported to {self.filename}", W)
+        print('\033[0;33m', f"[*] Scan finished, Results exported to {self.filename}", '\033[0m')
+
+# 使用示例
+if __name__ == '__main__':
+    import time
+    result = [
+        {
+            "match_rule": "aid=10&wt=1&os=1&key=",
+            "match_value": "tpResponseCode\nhttpStream\nhttpUrl\nhttponly\nhttps\nhttps:\nhttps://\nhttps://api.funnel.rocks/api/trust?aid=10&wt=1&os=1&key=\nhu\nhub\nhub is required\nhughes\nhyatt\nhybridSignTest\nhypot\nhyundai\ni\ni386\ni686\niArgs\niClassToInstanti",
+            "accuracy": 100,
+            "apk_name": "test.apk",
+            "app_version": "24.9.11",
+            "hash": "d4489ba7cd892142a098b6be04c7907c",
+            "Package_name": "im.token.app",
+            "app_name": "imToken"
+        }
+    ]
+    # 报告存放目录，config.py 已设定
+    REPORT_DIR = os.path.join(os.path.dirname(__file__), "reporttmp")
+    os.makedirs(REPORT_DIR, exist_ok=True)
+
+    filename = os.path.join(REPORT_DIR, time.strftime("%Y%m%d_%H%M%S") + "_results.csv")
+    report_generator = ReportGenerator(result, filename)
+    report_generator.export_to_csv()

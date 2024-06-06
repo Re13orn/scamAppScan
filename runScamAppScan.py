@@ -20,8 +20,10 @@ def main():
     all_results = []
     apk_files = [os.path.join(APK_DIRECTORY, f) for f in os.listdir(APK_DIRECTORY) if f.endswith('.apk')]
     for apk_file in apk_files:
-        analyzer = APKAnalyzer(apk_file)
-        results = analyzer.analyze_apk(combined_patterns)
+        apk_name = os.path.basename(apk_file)
+        print(G1, f"[+] 开始分析: {apk_name}", W)
+        analyzer = APKAnalyzer(apk_file,TEMP_DIRECTORY)
+        results = analyzer.analyze_apk(combined_patterns,CONTEXT_RANGE)
         if results:
             result_json = json.dumps(results, indent=4)
             print(G, result_json, W)
@@ -33,7 +35,7 @@ def main():
                 if apk_hash == hash:
                     print(O, f"[*] 经过历史恶意APK库Hash匹配: {analyzer.apk_name} 命中，恶意域名为: {domain}，哈希为: {hash}", W)
             
-            shellDetect = APKShellDetector(apk_file)
+            shellDetect = APKShellDetector(apk_file, SHELLFEATURE)
             shellDetect.detect()
 
     if all_results:
