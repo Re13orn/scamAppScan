@@ -1,11 +1,10 @@
-import os
 import csv
 import json
 
 
 class ReportGenerator:
     """
-    报告生成器类，负责导出分析结果到 CSV/JSON 文件。
+    报告生成类，负责导出分析结果到 CSV/JSON 文件。
     """
 
     def __init__(self, results, filename):
@@ -34,6 +33,7 @@ class ReportGenerator:
 
 # 使用示例
 if __name__ == '__main__':
+    import os
     import time
     result = [
         {

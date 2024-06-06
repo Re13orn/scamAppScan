@@ -1,4 +1,5 @@
 import csv
+import json
 
 
 class ReportGenerator:
@@ -20,4 +21,12 @@ class ReportGenerator:
             writer.writeheader()
             for result in self.results:
                 writer.writerow(result)
-        print(O, f"[*] Scan finished, Results exported to {self.filename}", W)
+        print(f"[*] Scan finished, Results exported to {self.filename}")
+
+    def export_to_json(self):
+        """
+        导出分析结果到 JSON 文件。
+        """
+        with open(self.filename, 'w', encoding='utf-8') as jsonfile:
+            json.dump(self.results, jsonfile, indent=4, ensure_ascii=False)
+        print(f"[*] Scan finished, Results exported to {self.filename}")

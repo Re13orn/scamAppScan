@@ -1,16 +1,13 @@
-from . import api_bp
-import hashlib
-from flask import request, jsonify, current_app
-from werkzeug.utils import secure_filename
-
 import os
-import time
 import json
-from app.utils.scamAppScanConfig import *
+import hashlib
+from . import api_bp
 from loguru import logger
 from app.utils.apkAnalyzer import APKAnalyzer
 from app.utils.apkShellDetector import APKShellDetector
-# from app.utils.reportGenerator import ReportGenerator
+from app.utils.scamAppScanConfig import *
+from flask import request, jsonify, current_app
+from werkzeug.utils import secure_filename
 
 from concurrent.futures import ThreadPoolExecutor
 # 线程池所能同时进行的最大数量
