@@ -373,13 +373,16 @@ APK_DIRECTORY = os.path.join(PROJECT_DIR, "apkStore")
 # 二进制工具存放目录
 TOOLS_DIR  = os.path.join(PROJECT_DIR, "tools")
 # aapt 工具
-# os_name = platform.system()
-# if os_name == 'Darwin':
-#     AAPT = os.path.join(TOOLS_DIR, "aapt_MacM1")
-# elif os_name == 'Linux':
-#     AAPT = os.path.join(TOOLS_DIR, "aapt_ubuntu_x64")
-# else:
-#     AAPT = "Unknown OS Not Found aapt"
+os_name = platform.system()
+if os_name == 'Darwin':
+    AAPT = os.path.join(TOOLS_DIR, "aapt_MacM1")
+elif os_name == 'Linux':
+    AAPT = os.path.join(TOOLS_DIR, "aapt_ubuntu_x64")
+else:
+    AAPT = "Unknown OS Not Found aapt"
+
+# apktool.jar
+APKTOOL = os.path.join(TOOLS_DIR, "apktool.jar")
 
 """
 分析上下文范围设置

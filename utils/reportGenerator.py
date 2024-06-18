@@ -52,11 +52,11 @@ if __name__ == '__main__':
     os.makedirs(REPORT_DIR, exist_ok=True)
 
     # 导出 csv 格式报告
-    csv_filename = os.path.join(REPORT_DIR, time.strftime("%Y%m%d_%H%M%S") + "_results.csv")
+    csv_filename = os.path.join(REPORT_DIR, f"{time.strftime('%Y%m%d_%H%M%S')}_results.csv")
     csv_report_generator = ReportGenerator(result, csv_filename)
     csv_report_generator.export_to_csv()
 
     # 导出 json 格式报告
-    json_filename = os.path.join(REPORT_DIR, time.strftime("%Y%m%d_%H%M%S") + "_results.json")
+    json_filename = os.path.join(REPORT_DIR, f"{time.strftime('%Y%m%d_%H%M%S')}_results.json")
     json_report_generator = ReportGenerator(result, json_filename)
     json_report_generator.export_to_json()

@@ -1,5 +1,5 @@
 from flask import Flask
-from config import Config
+from utils.config import Config
 from flask_wtf.csrf import CSRFProtect
 from werkzeug.middleware.proxy_fix import ProxyFix
 

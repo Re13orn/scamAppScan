@@ -1,0 +1,7 @@
+{
+    "status_code": 200,
+    "isScamApp": "unknow",
+    "result": "[\n    {\n        \"apk_name\": \"7e8a47bf4cba25b59d68ac687974b88f.apk\",\n        \"app_version\": \"3.110.0\",\n        \"hash\": \"7e8a47bf4cba25b59d68ac687974b88f\",\n        \"Package_name\": \"com.kubi.kucoin\",\n        \"app_name\": \"KuCoin\"\n    }\n]",
+    "history": [],
+    "shell": "梆梆企业版"
+}
