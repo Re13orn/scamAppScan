@@ -1,6 +1,8 @@
 # ScamAppScan
 
-👊**恶意 APK 检测工具，采用 androguard 库进行分析匹配是否含有恶意APK特征。**
+👊**恶意 APK 检测工具，对恶意APK进行分析匹配是否含有恶意APK特征。**
+
+**默认采用 androguard (仅Python第三方库)库方案作为首选，备选方案是 aapt 工具（MacOS & linux） + apktool.jar（需要有java环境支持， tools 有二进制文件，可自行更新或者添加windows端）**
 
 ![Example](./docs/example_1.jpg)
 
@@ -60,6 +62,8 @@ python3 -m pip install ./utils/androguard-4.1.1-py3-none-any.whl -i https://pypi
 ```shell
 deactivate
 ```
+
+
 
 ## Web 安装和启动
 📝[点击跳转](https://github.com/Re13orn/scamAppScan/blob/main/Web/readme.md)
