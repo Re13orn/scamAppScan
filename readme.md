@@ -41,9 +41,6 @@ python3 -m pip install ./utils/androguard-4.1.1-py3-none-any.whl -i https://pypi
 python3 runScamAppScan.py
 ```
 
-## APK 存放
-可以放入多个待检测的APK到apkStore目录，项目会自动批量检测。
-
 **搭建虚拟环境**
 ```shell
 python3 -m venv .venv
@@ -63,7 +60,8 @@ python3 -m pip install ./utils/androguard-4.1.1-py3-none-any.whl -i https://pypi
 deactivate
 ```
 
-
+## APK 存放
+可以放入多个待检测的APK到apkStore目录，项目会自动批量检测。
 
 ## Web 安装和启动
 📝[点击跳转](https://github.com/Re13orn/scamAppScan/blob/main/Web/readme.md)
