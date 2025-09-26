@@ -1,6 +1,7 @@
 import os
 import json
 import hashlib
+import shutil
 from . import api_bp
 from loguru import logger
 from app.utils.apkAnalyzer import APKAnalyzer
@@ -35,6 +36,21 @@ def compute_hash(file_path):
     return hash_md5.hexdigest()
 
 
+def finalize_apk(file_path, original_filename):
+    """Finalize a fully uploaded APK by hashing and renaming it."""
+    file_hash = compute_hash(file_path)
+    file_hash_path = os.path.join(current_app.config['UPLOAD_FOLDER_APK'], f"{file_hash}.apk")
+    os.replace(file_path, file_hash_path)
+    return {
+        "analyzer": "api/submitrunscan",
+        "status": "success",
+        "status_code": 200,
+        "hash": file_hash,
+        "scan_type": "apk",
+        "file_name": original_filename,
+    }
+
+
 @api_bp.route('/upload', methods=['POST'])
 def upload():
     """
@@ -42,7 +58,7 @@ def upload():
     """
     if 'file' not in request.files:
         return jsonify({'error': 'No file part', 'status_code': 400}), 400
-    
+
     file = request.files['file']
     if file.filename == '':
         return jsonify({'error': 'No selected file', 'status_code': 400}), 400
@@ -55,19 +71,81 @@ def upload():
 
     try:
         file.save(file_path)
-        file_hash = compute_hash(file_path)
-        file_hash_path = os.path.join(current_app.config['UPLOAD_FOLDER_APK'], file_hash + ".apk")
-        os.rename(file_path, file_hash_path)
-        return jsonify({
-            "analyzer": "api/submitrunscan",
-            "status": "success",
-            "status_code":200,
-            "hash": file_hash,
-            "scan_type": "apk",
-            "file_name": filename
-        }), 200
+        payload = finalize_apk(file_path, filename)
+        return jsonify(payload), 200
     except Exception as e:
+        if os.path.exists(file_path):
+            os.remove(file_path)
         return jsonify({'error': str(e), 'status_code': 500}), 500
+
+
+@api_bp.route('/upload-chunk', methods=['POST'])
+def upload_chunk():
+    """Handle chunked APK uploads to support large files."""
+    chunk = request.files.get('chunk')
+    upload_id = request.form.get('uploadId')
+    file_name = request.form.get('fileName', '')
+    chunk_index = request.form.get('chunkIndex')
+    total_chunks = request.form.get('totalChunks')
+    file_size = request.form.get('fileSize')
+
+    if not all([chunk, upload_id, file_name, chunk_index, total_chunks, file_size]):
+        return jsonify({'error': 'Missing upload metadata', 'status_code': 400}), 400
+
+    try:
+        chunk_index = int(chunk_index)
+        total_chunks = int(total_chunks)
+        expected_size = int(file_size)
+    except (TypeError, ValueError):
+        return jsonify({'error': 'Invalid upload metadata', 'status_code': 400}), 400
+
+    if not allowed_file(file_name):
+        return jsonify({'error': 'File type not supported', 'status_code': 400}), 400
+
+    tmp_dir = current_app.config['UPLOAD_FOLDER_TMP']
+    tmp_path = os.path.join(tmp_dir, f"{secure_filename(upload_id)}.part")
+
+    # Clean up any stale data when starting a new upload
+    if chunk_index == 0 and os.path.exists(tmp_path):
+        os.remove(tmp_path)
+
+    try:
+        with open(tmp_path, 'ab') as destination:
+            chunk.stream.seek(0)
+            shutil.copyfileobj(chunk.stream, destination)
+    except Exception as exc:
+        if os.path.exists(tmp_path):
+            os.remove(tmp_path)
+        return jsonify({'error': f'Failed to write chunk: {exc}', 'status_code': 500}), 500
+
+    is_last_chunk = chunk_index + 1 == total_chunks
+
+    if not is_last_chunk:
+        written = os.path.getsize(tmp_path)
+        return jsonify({
+            'status': 'continue',
+            'status_code': 202,
+            'received_bytes': written,
+            'total_bytes': expected_size,
+        }), 200
+
+    if os.path.getsize(tmp_path) != expected_size:
+        os.remove(tmp_path)
+        return jsonify({'error': 'Uploaded size does not match file size', 'status_code': 400}), 400
+
+    filename = secure_filename(file_name)
+    final_path = os.path.join(current_app.config['UPLOAD_FOLDER_APK'], filename)
+
+    try:
+        shutil.move(tmp_path, final_path)
+        payload = finalize_apk(final_path, filename)
+        return jsonify(payload), 200
+    except Exception as exc:
+        if os.path.exists(tmp_path):
+            os.remove(tmp_path)
+        if os.path.exists(final_path):
+            os.remove(final_path)
+        return jsonify({'error': f'Failed to finalize upload: {exc}', 'status_code': 500}), 500
 
 
 @api_bp.route('/submitrunscan/<string:apk_hash_filename>/', methods=['GET'])
@@ -104,9 +182,10 @@ def runApkAnalysis(apk_hash_filename,UPLOAD_PATH,combined_patterns,flag=True):
             shell = shellDetect.detect() or "unknown"
         except:
             shell = "unknown"
-        isScamApp = "unknow"
+        isScamApp = "unknown"
         all_results = []
-        status_code = 400
+        status_code = 500
+        rule_miss = False
 
         try:
             analyzer = APKAnalyzer(apk_file, TEMP_DIRECTORY)
@@ -115,19 +194,19 @@ def runApkAnalysis(apk_hash_filename,UPLOAD_PATH,combined_patterns,flag=True):
             history = history_apk_hash_compare(apk_hash_filename)
 
             if results:
+                has_matches = any(entry.get("match_rule") for entry in results)
                 status_code = 200
-                if results[0].get("match_rule"):
-                    isScamApp = "true"
-                    result_json = json.dumps(results,indent=4)
-                    print(G,result_json,W)
-                    all_results.extend(results)
-                else:
-                    result_json = json.dumps(results, indent=4)
-                    print(G, result_json, W)
-                    all_results.extend(results)
+                isScamApp = "true" if has_matches else "false"
+                rule_miss = not has_matches
+                result_json = json.dumps(results, indent=4)
+                print(G, result_json, W)
+                all_results.extend(results)
+                if not has_matches:
                     print(R, f"[-] 可以进行分析但是未发现信息: {analyzer.apk_name}", W)
             else:
-                status_code = 400
+                status_code = 200
+                isScamApp = "false"
+                rule_miss = True
                 
         except Exception as e:
             status_code = 500
@@ -138,7 +217,8 @@ def runApkAnalysis(apk_hash_filename,UPLOAD_PATH,combined_patterns,flag=True):
                         "isScamApp" : isScamApp,
                         "result" : json.dumps(all_results, indent=4),
                         "history" : history,
-                        "shell" : shell
+                        "shell" : shell,
+                        "rule_miss": rule_miss
                     }
         with open(json_filename_path, "w+", encoding="utf-8") as f:
             json.dump(json_content,f,ensure_ascii=False,indent=4)

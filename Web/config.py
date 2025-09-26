@@ -8,7 +8,7 @@ class Config(object):
     UPLOAD_FOLDER = pathlib.Path(__file__).parent.joinpath('upload').resolve()
     if not os.path.isdir(UPLOAD_FOLDER):
         os.mkdir(UPLOAD_FOLDER)
-    
+
     UPLOAD_FOLDER_JSON = os.path.join(UPLOAD_FOLDER, 'json')
     if not os.path.isdir(UPLOAD_FOLDER_JSON):
         os.mkdir(UPLOAD_FOLDER_JSON)
@@ -16,4 +16,8 @@ class Config(object):
     UPLOAD_FOLDER_APK = os.path.join(UPLOAD_FOLDER, 'apk')
     if not os.path.isdir(UPLOAD_FOLDER_APK):
         os.mkdir(UPLOAD_FOLDER_APK)
+
+    UPLOAD_FOLDER_TMP = os.path.join(UPLOAD_FOLDER, 'tmp')
+    if not os.path.isdir(UPLOAD_FOLDER_TMP):
+        os.mkdir(UPLOAD_FOLDER_TMP)
     

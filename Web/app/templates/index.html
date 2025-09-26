@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -8,369 +7,450 @@
     <meta name="description" content="Scam App Scan.">
     <meta name="author" content="Ajin Abraham">
     <title>Scam Apk Scan</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/adminlte.min.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/all.min.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='/css/spinner.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/home.css') }}">
+    <link rel="stylesheet" href="/static/css/style.css">
+    <link rel="stylesheet" href="/static/css/adminlte.min.css">
+    <link rel="stylesheet" href="/static/css/all.min.css">
+    <link rel="stylesheet" href="/static/css/spinner.css">
+    <link rel="stylesheet" href="/static/css/home.css">
     <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700" rel="stylesheet">
 </head>
-
-<div class="site-wrapper">
-    <div class="site-wrapper-inner">
-        <div class="cover-container">
-            <div class="masthead clearfix">
-                <div align="center" class="inner"></div>
+<body class="home-body">
+    <div class="site-wrapper">
+        <header class="masthead" role="banner">
+            <div class="inner">
+                <h1 class="brand-title">Scam App Scan</h1>
+                <p class="brand-tagline">Upload an Android package to evaluate potential risks in seconds.</p>
             </div>
+        </header>
+        <main class="cover-container" role="main">
             <div class="inner cover">
-                <div style="opacity: 0; visibility: hidden;" id="drop">
-                    <div id="textnode" style="font-size: 42px;">Drop anywhere!</div>
-                </div>
-                <br>
-                <form id="upload_form" enctype="multipart/form-data" method="post">
-                    <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token() }}">
-                    <label for="uploadFile" class="fileUpload btn btn-default btn-lg">
-                      <span class="fas fa-cloud-upload-alt"></span> Upload &amp; Analyze
-                    </label>
-                    <input type="file" name="file" id="uploadFile" placeholder="Choose File" multiple>
-                    <br>
-                    <small><i>Drag &amp; Drop anywhere!</i></small>
-                    <h5 id="status"></h5>
-                    <progress id="progressBar" value="0" max="100" style="width:300px; visibility:hidden;"></progress>
-                </form>
-
-                <div id="resultsModal" class="modal">
-                    <div class="modal-content">
-                        <span class="close" style="color: red;">&times;</span>
-                        <div id="basicInfo" class="basic-info"></div>
-                        <!-- APK基本信息展示区 -->
-                        <div id="resultsContainer"></div>
-                        <!-- 其他结果展示区 -->
-                    </div>
-                </div>
-
-                <div class="mastfoot">
-                    <!-- <input type="text" id="package" class="form-control" placeholder="Download & Scan by package name"> -->
-                    <div class="inner">
-                        </br>
-                        <p>&copy;2024 Scam App Scan</p>
-                    </div>
-                </div>
+                <section class="upload-card" aria-labelledby="uploadTitle">
+                    <h2 id="uploadTitle" class="card-title">Upload an APK to begin</h2>
+                    <p class="card-subtitle">Drag &amp; drop anywhere on the page or choose a file manually.</p>
+                    <form id="upload_form" class="upload-form" enctype="multipart/form-data" method="post">
+                        <div class="upload-actions">
+                            <label for="uploadFile" class="fileUpload btn btn-default btn-lg">
+                                <span class="fas fa-cloud-upload-alt" aria-hidden="true"></span>
+                                <span>Upload &amp; Analyze</span>
+                            </label>
+                            <input type="file" name="file" id="uploadFile" placeholder="Choose File" multiple>
+                        </div>
+                        <p class="upload-hint">Supported formats: APK, APKS, XAPK</p>
+                        <h5 id="status" role="status" aria-live="polite"></h5>
+                        <progress id="progressBar" value="0" max="100"></progress>
+                    </form>
+                </section>
             </div>
-        </div>
+        </main>
+        <footer class="mastfoot" role="contentinfo">
+            <div class="inner">
+                <p>&copy;2024 Scam App Scan</p>
+            </div>
+        </footer>
     </div>
 
-    <div class="hidden loading">
+    <div id="drop" class="drop-overlay" aria-hidden="true">
+        <div id="textnode">Drop your APK to start scanning</div>
+    </div>
+
+    <div class="loading hidden" role="status" aria-live="polite">
         <div class='uil-ring-css' style='transform:scale(0.79);'>
             <div></div>
         </div>
     </div>
 
-    <script src="{{ url_for('static', filename='js/jquery.min.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/notify.min.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/bootstrap.bundle.min.js') }}"></script>
+    <div id="resultsModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="resultsHeading" aria-hidden="true">
+        <div class="modal-content">
+            <button type="button" class="close" aria-label="Close results">&times;</button>
+            <div class="modal-body">
+                <h3 id="resultsHeading" class="modal-title">Scan results</h3>
+                <div id="basicInfo" class="basic-info"></div>
+                <div id="resultsContainer"></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/static/js/jquery.min.js"></script>
+    <script src="/static/js/notify.min.js"></script>
+    <script src="/static/js/bootstrap.bundle.min.js"></script>
     <script>
         $(document).ready(function() {
+            const dropOverlay = document.getElementById('drop');
+            const loader = document.querySelector('.loading');
+            const progressBar = document.getElementById('progressBar');
+            const statusText = document.getElementById('status');
+            const resultsModal = document.getElementById('resultsModal');
+            const basicInfo = document.getElementById('basicInfo');
+            const resultsContainer = document.getElementById('resultsContainer');
+            const closeButton = resultsModal.querySelector('.close');
+            let dragCounter = 0;
 
+            function updateStatus(message) {
+                statusText.textContent = message || '';
+            }
 
-            // 处理并展示分析结果的函数
-            function displayResults(data) {
-                var resultContainer = document.getElementById('resultsContainer');
-                resultContainer.innerHTML = ''; // 清空之前的内容
-
-                if (data.status_code === 200) {
-                    try {
-                        var results = JSON.parse(data.result);
-                        if (results.length === 0) { // 检查结果是否为空
-
-                            resultContainer.innerHTML = `
-                            <p><span class="label">No results found. Current rules did not detect this as a malicious app.</span></p>
-                            <p><span class="label">是否恶意App: </span> <span class="value accuracy-value">${data.isScamApp}</span></p>
-                            <p><span class="label">加固方案: </span> <span class="value accuracy-value">${data.shell}</span></p>
-                        `;
-                        } else {
-
-                            var basicInfo = document.getElementById('basicInfo');
-                            var resultsContainer = document.getElementById('resultsContainer');
-
-                            var firstResult = JSON.parse(data.result)[0];
-                            basicInfo.innerHTML = `
-                                <p><span class="label">APK Hash Name: </span> <span class="value">${firstResult.apk_name} (Version: ${firstResult.app_version})</span></p>
-                                <p><span class="label">APK 包: </span> <span class="value">${firstResult.Package_name}</span></p>
-                                <p><span class="label">App 名: </span> <span class="value">${firstResult.app_name}</span></p>
-                                <p><span class="label">是否恶意App: </span> <span class="value accuracy-value">${data.isScamApp}</span></p>
-
-                            `; // 显示基本信息
-                            resultsContainer.innerHTML = ''; // 清空之前的匹配结果内容
-                            JSON.parse(data.result).forEach(function(result) {
-                                var content = `
-                                <div class="result-item">
-                                    <p><span class="label match-rule-label">恶意特征:</span> <span class="value match-rule-value">${result.match_rule}</span></p>
-                                    <p><span class="label match-value-label">匹配值:</span> <span class="value match-value-value">${result.match_value}</span></p>
-                                    <p><span class="label accuracy-label">匹配信心度 :</span> <span class="value accuracy-value">${result.accuracy}</span></p>
-                                </div>
-                            `;
-                                resultsContainer.innerHTML += content;
-                            });
-                        }
-                        document.getElementById('resultsModal').style.display = 'block'; // 显示结果区域
-                    } catch (e) {
-                        console.error('Error parsing JSON data:', e);
-                        resultContainer.innerHTML = `<p>Error parsing results data.</p>`;
-                    }
-                } else if (data.status_code === 400) {
-                    try {
-                        var results = JSON.parse(data.result);
-                        if (results.length === 0) { // 检查结果是否为空
-
-                            resultContainer.innerHTML = `
-                            <p><span class="label">No results found. Current rules did not detect this as a malicious app.</span></p>
-                            <p><span class="label">是否恶意App: </span> <span class="value accuracy-value">${data.isScamApp}</span></p>
-                            <p><span class="label">加固方案: </span> <span class="value accuracy-value">${data.shell}</span></p>
-                        `;
-                        } else {
-                            var basicInfo = document.getElementById('basicInfo');
-                            var resultsContainer = document.getElementById('resultsContainer');
-
-                            var firstResult = JSON.parse(data.result)[0];
-                            basicInfo.innerHTML = `
-                                <p><span class="label">APK Hash Name: </span> <span class="value">${firstResult.apk_name} (Version: ${firstResult.app_version})</span></p>
-                                <p><span class="label">APK 包: </span> <span class="value">${firstResult.Package_name}</span></p>
-                                <p><span class="label">App 名: </span> <span class="value">${firstResult.app_name}</span></p>
-                                <p><span class="label">是否恶意App: </span> <span class="value accuracy-value">${data.isScamApp}</span></p>
-                                <p><span class="label">加固方案: </span> <span class="value accuracy-value">${data.shell}</span></p>
-                            `; // 显示基本信息
-
-                            resultsContainer.innerHTML = ''; // 清空之前的匹配结果内容
-                            var content = `
-                            <div class="result-item">
-                                <p><span class="label accuracy-value">当前规则库未匹配到恶意App信息，不代表安全Apk !!</span></p>
-                            </div>
-                            `;
-                            resultContainer.innerHTML += content;
-                        }
-                        document.getElementById('resultsModal').style.display = 'block'; // 显示结果区域
-                    } catch (e) {
-                        console.error('Error parsing JSON data:', e);
-                        resultContainer.innerHTML = `<p>Error parsing results data.</p>`;
-                        // 刷新页面
-                        location.reload();
-                    }
-                } else {
-                    resultContainer.innerHTML = `<p>Error: ${data.description}</p>`;
-                    // 刷新页面
-                    location.reload();
+            function toggleProgress(show) {
+                progressBar.style.visibility = show ? 'visible' : 'hidden';
+                if (!show) {
+                    progressBar.value = 0;
                 }
             }
-            // 获取分析结果
-            function getscanresult(hash) {
-                url = "/api/getscanresult/" + hash + "/"
+
+            function setDropOverlayVisible(visible) {
+                dropOverlay.classList.toggle('is-visible', visible);
+                dropOverlay.setAttribute('aria-hidden', visible ? 'false' : 'true');
+            }
+
+            function openModal() {
+                resultsModal.classList.add('is-visible');
+                resultsModal.setAttribute('aria-hidden', 'false');
+                document.body.classList.add('modal-open');
+            }
+
+            function closeModal() {
+                resultsModal.classList.remove('is-visible');
+                resultsModal.setAttribute('aria-hidden', 'true');
+                document.body.classList.remove('modal-open');
+                basicInfo.innerHTML = '';
+                resultsContainer.innerHTML = '';
+            }
+
+            function show_loader() {
+                loader.classList.remove('hidden');
+            }
+
+            function hide_loader() {
+                loader.classList.add('hidden');
+            }
+
+            closeButton.addEventListener('click', closeModal);
+            resultsModal.addEventListener('click', function(event) {
+                if (event.target === resultsModal) {
+                    closeModal();
+                }
+            });
+            document.addEventListener('keydown', function(event) {
+                if (event.key === 'Escape' && resultsModal.classList.contains('is-visible')) {
+                    closeModal();
+                }
+            });
+
+            function safeParseResult(payload) {
+                if (!payload) {
+                    return { matches: [], error: null };
+                }
+                try {
+                    const parsed = JSON.parse(payload);
+                    if (Array.isArray(parsed)) {
+                        return { matches: parsed, error: null };
+                    }
+                    return { matches: [], error: new Error('Unexpected result format') };
+                } catch (error) {
+                    return { matches: [], error };
+                }
+            }
+
+            function renderMatchCard(result) {
+                return `
+                    <div class="result-item">
+                        <p><span class="label match-rule-label">恶意特征:</span> <span class="value match-rule-value">${result.match_rule}</span></p>
+                        <p><span class="label match-value-label">匹配值:</span> <span class="value match-value-value">${result.match_value}</span></p>
+                        <p><span class="label accuracy-label">匹配信心度 :</span> <span class="value accuracy-value">${result.accuracy}</span></p>
+                    </div>
+                `;
+            }
+
+            function renderNoMatchMessages(data, isRuleMiss) {
+                const messages = [`
+                    <p class="result-message neutral">No results found. Current rules did not detect this as a malicious app.</p>
+                    <p><span class="label">是否恶意App:</span> <span class="value accuracy-value">${data.isScamApp}</span></p>
+                    <p><span class="label">加固方案:</span> <span class="value accuracy-value">${data.shell}</span></p>
+                `];
+                if (isRuleMiss) {
+                    messages.push('<p class="result-message warning">当前规则库未匹配到恶意App信息，不代表安全Apk !!</p>');
+                }
+                return messages.join('');
+            }
+
+            function displayResults(data) {
+                const { matches, error } = safeParseResult(data.result);
+                basicInfo.innerHTML = '';
+                resultsContainer.innerHTML = '';
+
+                if (error) {
+                    console.error('Error parsing JSON data:', error);
+                    resultsContainer.innerHTML = '<p class="result-message error">Error parsing results data.</p>';
+                    hide_loader();
+                    openModal();
+                    return;
+                }
+
+                const metadata = matches.find(entry => entry.apk_name) || {};
+                const matchResults = matches.filter(entry => entry.match_rule);
+
+                if (matchResults.length > 0) {
+                    const firstResult = metadata.apk_name ? metadata : matchResults[0];
+                    basicInfo.innerHTML = `
+                        <p><span class="label">APK Hash Name:</span> <span class="value">${firstResult.apk_name} (Version: ${firstResult.app_version})</span></p>
+                        <p><span class="label">APK 包:</span> <span class="value">${firstResult.Package_name}</span></p>
+                        <p><span class="label">App 名:</span> <span class="value">${firstResult.app_name}</span></p>
+                        <p><span class="label">是否恶意App:</span> <span class="value accuracy-value">${data.isScamApp}</span></p>
+                    `;
+                    resultsContainer.innerHTML = matchResults.map(renderMatchCard).join('');
+                } else {
+                    const isRuleMiss = data.rule_miss === true || data.status_code === 400;
+                    basicInfo.innerHTML = metadata.apk_name ? `
+                        <p><span class="label">APK Hash Name:</span> <span class="value">${metadata.apk_name} (Version: ${metadata.app_version})</span></p>
+                        <p><span class="label">APK 包:</span> <span class="value">${metadata.Package_name}</span></p>
+                        <p><span class="label">App 名:</span> <span class="value">${metadata.app_name}</span></p>
+                    ` : '';
+                    resultsContainer.innerHTML = renderNoMatchMessages(data, isRuleMiss);
+                }
+
                 hide_loader();
-                var xhr = new XMLHttpRequest();
+                openModal();
+            }
+
+            function getscanresult(hash) {
+                const url = "/api/getscanresult/" + hash + "/";
+                const xhr = new XMLHttpRequest();
                 xhr.open('GET', url, true);
-                xhr.addEventListener("load", function(evt) {
+                xhr.addEventListener('load', function() {
                     if (xhr.status === 200) {
-                        var data = JSON.parse(xhr.responseText);
-                        if (data.status_code === 404) {
-                            setTimeout(
-                                function() {
+                        try {
+                            const data = JSON.parse(xhr.responseText);
+                            if (data.status_code === 404) {
+                                setTimeout(function() {
                                     getscanresult(hash);
-                                },
-                                3000 // 等待3s
-                            );
-                        } else if (data.status_code === 200) {
-                            displayResults(data); // 调用displayResults函数处理并展示数据
-                        } else {
-                            console.error("Error fetching results:", xhr.statusText);
-                            // Refresh the page
-                            location.reload();
+                                }, 3000);
+                            } else if (data.status_code === 200 || data.status_code === 400) {
+                                displayResults(data);
+                            } else {
+                                console.error('Error fetching results:', data.description || xhr.statusText);
+                                updateStatus('Unable to fetch scan results.');
+                                hide_loader();
+                            }
+                        } catch (error) {
+                            console.error('Error parsing scan response:', error);
+                            updateStatus('Unable to read scan response.');
+                            hide_loader();
                         }
                     } else {
-                        console.error("Error fetching results:", xhr.statusText);
-                        // 刷新页面
-                        location.reload();
+                        console.error('Error fetching results:', xhr.statusText);
+                        updateStatus('Unable to fetch scan results.');
+                        hide_loader();
                     }
                 }, false);
+                xhr.addEventListener('error', function() {
+                    updateStatus('Unable to fetch scan results.');
+                    hide_loader();
+                });
                 xhr.send();
             }
-            // 提交分析请求
+
             function submitrunscan(analyzer, hash) {
-                url = analyzer + '/' + hash + '/'
-                hide_loader();
-                var xhr = new XMLHttpRequest();
+                const url = analyzer + '/' + hash + '/';
+                const xhr = new XMLHttpRequest();
                 xhr.open('GET', url, true);
-                xhr.addEventListener("loadstart", function(evt) {
+                xhr.addEventListener('loadstart', function() {
                     Notifier.snackbar({
-                        message: "Analysis started! Please wait or check recent scans after sometime.",
+                        message: 'Analysis started! Please wait or check recent scans after sometime.',
                         duration: 10,
                     });
+                    show_loader();
                 });
-                xhr.addEventListener("load", function(evt) {
+                xhr.addEventListener('load', function() {
                     if (xhr.status === 200) {
-                        var data = JSON.parse(xhr.responseText);
-                        getscanresult(hash); // 调用displayResults函数处理并展示数据
+                        try {
+                            const data = JSON.parse(xhr.responseText);
+                            if (data.status === 'success') {
+                                getscanresult(hash);
+                            } else {
+                                updateStatus(data.description || 'Unable to start scan.');
+                                hide_loader();
+                            }
+                        } catch (error) {
+                            console.error('Error parsing analyzer response:', error);
+                            updateStatus('Unable to start scan.');
+                            hide_loader();
+                        }
                     } else {
-                        console.error("Error fetching results:", xhr.statusText);
-                        // 刷新页面
-                        location.reload();
+                        console.error('Error fetching results:', xhr.statusText);
+                        updateStatus('Unable to start scan.');
+                        hide_loader();
                     }
                 }, false);
+                xhr.addEventListener('error', function() {
+                    updateStatus('Unable to start scan.');
+                    hide_loader();
+                });
                 xhr.send();
             }
 
-            // Handle file input changes
-            $('input[type=file]').change(function() {
-                $('#status').text(""); // Clear status message
+            $('input[type=file]').on('change', function() {
+                updateStatus('');
                 if (this.files.length === 0) {
-                    return; // No file selected, do nothing
+                    return;
                 }
-                var files = this.files;
-                if (document.location.host === 'mobsf.live') {
-
-                } else {
-                    $('#uploadFile').hide(); // Hide file input for all other hosts
+                const files = this.files;
+                if (document.location.host !== 'mobsf.live') {
                     handleFiles(files);
                 }
             });
 
-            // Full Screen Drag & Drop File Upload
-            window.addEventListener("dragover", function(e) {
-                e.preventDefault(); // Prevent default behavior
+            window.addEventListener('dragenter', function(event) {
+                event.preventDefault();
+                dragCounter += 1;
+                setDropOverlayVisible(true);
             });
 
-            window.addEventListener("drop", function(e) {
-                e.preventDefault();
-                $('#drop').css({
-                    visibility: 'hidden',
-                    opacity: 0
-                });
-                $('#textnode').css('font-size', '42px');
-                if (e.dataTransfer.files.length > 0) {
-                    handleFiles(e.dataTransfer.files);
+            window.addEventListener('dragleave', function(event) {
+                event.preventDefault();
+                dragCounter = Math.max(0, dragCounter - 1);
+                if (dragCounter === 0) {
+                    setDropOverlayVisible(false);
                 }
             });
 
-            // Upload and handle files
+            window.addEventListener('dragover', function(event) {
+                event.preventDefault();
+            });
+
+            window.addEventListener('drop', function(event) {
+                event.preventDefault();
+                dragCounter = 0;
+                setDropOverlayVisible(false);
+                if (event.dataTransfer.files.length > 0) {
+                    handleFiles(event.dataTransfer.files);
+                }
+            });
+
             function handleFiles(files) {
                 Array.from(files).forEach(uploadFile);
             }
 
             function uploadFile(file) {
                 if (!isValidExt(file.name) || !isValidMime(file.type)) {
-                    return; // Stop if invalid file
+                    return;
                 }
-                $('#progressBar').css('visibility', 'visible'); // Show progress bar
-                var formData = new FormData();
-                formData.append("file", file);
 
-                $.ajax({
-                    url: '/api/upload',
-                    type: 'POST',
-                    data: formData,
-                    contentType: false,
-                    processData: false,
-                    beforeSend: function(xhr) {
-                        xhr.setRequestHeader("X-CSRFToken", "{{ csrf_token() }}");
-                    },
-                    xhr: function() {
-                        var xhr = new XMLHttpRequest();
-                        xhr.upload.addEventListener("progress", progressHandler, false);
-                        xhr.addEventListener("load", completeHandler, false);
-                        xhr.addEventListener("error", errorHandler, false);
-                        xhr.addEventListener("abort", abortHandler, false);
-                        return xhr;
-                    },
-                    success: function(data) {
-                        if (data.status === 'success') {
-                            // ...
-                        } else {
+                const CHUNK_SIZE = 5 * 1024 * 1024; // 5MB per chunk
+                const totalChunks = Math.max(1, Math.ceil(file.size / CHUNK_SIZE));
+                const uploadId = (window.crypto && crypto.randomUUID) ? crypto.randomUUID() : `${Date.now()}-${Math.random().toString(16).slice(2)}`;
+                let currentChunk = 0;
+                let uploadedBytes = 0;
+
+                toggleProgress(true);
+                updateStatus('Uploading…');
+
+                function sendChunk() {
+                    const start = currentChunk * CHUNK_SIZE;
+                    const end = Math.min(start + CHUNK_SIZE, file.size);
+                    const chunk = file.slice(start, end);
+
+                    const formData = new FormData();
+                    formData.append('chunk', chunk, file.name);
+                    formData.append('uploadId', uploadId);
+                    formData.append('fileName', file.name);
+                    formData.append('chunkIndex', currentChunk);
+                    formData.append('totalChunks', totalChunks);
+                    formData.append('fileSize', file.size);
+
+                    $.ajax({
+                        url: '/api/upload-chunk',
+                        type: 'POST',
+                        data: formData,
+                        contentType: false,
+                        processData: false,
+                        beforeSend: function(xhr) {
+                            if (currentChunk === 0) {
+                                show_loader();
+                            }
+                        },
+                        xhr: function() {
+                            const xhr = new XMLHttpRequest();
+                            xhr.upload.addEventListener('progress', function(event) {
+                                if (!event.lengthComputable) {
+                                    return;
+                                }
+                                const totalUploaded = uploadedBytes + event.loaded;
+                                const percent = Math.min(100, Math.round((totalUploaded / Math.max(file.size, 1)) * 100));
+                                progressBar.value = percent;
+                                updateStatus(percent + '% Uploaded…');
+                            }, false);
+                            xhr.addEventListener('error', errorHandler, false);
+                            xhr.addEventListener('abort', abortHandler, false);
+                            return xhr;
+                        },
+                        success: function(data) {
+                            if (data.status === 'continue') {
+                                uploadedBytes += chunk.size;
+                                currentChunk += 1;
+                                if (currentChunk < totalChunks) {
+                                    sendChunk();
+                                }
+                                return;
+                            }
+
+                            if (data.status === 'success') {
+                                uploadedBytes = file.size;
+                                progressBar.value = 100;
+                                updateStatus('Upload successful, analysis pending…');
+                                submitrunscan(data.analyzer, data.hash);
+                                return;
+                            }
+
+                            updateStatus(data.description || 'Upload failed.');
                             hide_loader();
-                            $('#status').text(data.description);
+                            toggleProgress(false);
+                        },
+                        error: function() {
+                            errorHandler();
                         }
-                    },
-                    error: function(xhr, status, error) {
-                        hide_loader();
-                        $('#status').text("Upload Failed!");
-                    }
-                });
+                    });
+                }
+
+                sendChunk();
             }
 
-            // Is valid file extensions
             function isValidExt(file_name) {
-                var val = file_name.toLowerCase();
-                var regex = new RegExp("^(.{1,300}?)\\.(apk|apks|xapk)$");
-                val = val.replace(/^.*[\\\/]/, '');
+                let val = file_name.toLowerCase();
+                const regex = new RegExp('^(.{1,300}?)\\\.(apk|apks|xapk)$');
+                val = val.replace(/^.*[\\\\\/]/, '');
                 if (!regex.test(val)) {
-                    document.getElementById('status').innerText = "Please upload APK only!";
+                    updateStatus('Please upload APK only!');
                     return false;
                 }
                 return true;
             }
 
-            // Is allowed mimetype
             function isValidMime(file_mime) {
-                if (file_mime.length < 1)
-                // bypass if mime is not available
+                if (file_mime.length < 1) {
                     return true;
-                var supported = ['application/octet-stream', 'application/vnd.android.package-archive', 'application/x-zip-compressed', 'binary/octet-stream', 'application/java-archive', 'application/iphone', 'application/octet-stream', 'application/x-itunes-ipa', 'application/x-zip-compressed', 'application/x-ar', 'text/vnd.a', 'binary/octet-stream', 'application/zip', 'application/octet-stream', 'application/x-zip-compressed', 'binary/octet-stream', 'application/octet-stream', 'application/vns.ms-appx', 'application/x-zip-compressed', ];
-                if (supported.indexOf(file_mime) > -1)
+                }
+                const supported = ['application/octet-stream', 'application/vnd.android.package-archive', 'application/x-zip-compressed', 'binary/octet-stream', 'application/java-archive', 'application/iphone', 'application/octet-stream', 'application/x-itunes-ipa', 'application/x-zip-compressed', 'application/x-ar', 'text/vnd.a', 'binary/octet-stream', 'application/zip', 'application/octet-stream', 'application/x-zip-compressed', 'binary/octet-stream', 'application/octet-stream', 'application/vns.ms-appx', 'application/x-zip-compressed'];
+                if (supported.indexOf(file_mime) > -1) {
                     return true;
-                document.getElementById('status').innerText = "MIME type (" + file_mime + ") is not supported!";
+                }
+                updateStatus('MIME type (' + file_mime + ') is not supported!');
                 return false;
             }
 
-
-            // Utility functions for UI
-            function show_loader() {
-                $('.loading').removeClass('hidden');
+            function errorHandler() {
+                updateStatus('Upload failed!');
+                hide_loader();
+                toggleProgress(false);
             }
 
-            function hide_loader() {
-                $('.loading').addClass('hidden');
+            function abortHandler() {
+                updateStatus('Upload aborted!');
+                hide_loader();
+                toggleProgress(false);
             }
 
-            function progressHandler(event) {
-                var percent = (event.loaded / event.total) * 100;
-                console.log("Uploaded... " + Math.round(percent) + "%");
-                $('#progressBar').val(Math.round(percent));
-                $('#status').text(Math.round(percent) + "% Uploaded...");
-            }
-
-            function completeHandler(event) {
-                $('#status').text("Upload successful, analysis pending...");
-
-                var data = JSON.parse(event.target.responseText);
-                if (data.status === 'success') {
-                    submitrunscan(data.analyzer, data.hash);
-                } else {
-                    $('#status').text(data.description);
-                }
-            }
-
-            function errorHandler(event) {
-                $('#status').text("Upload Failed!");
-            }
-
-            function abortHandler(event) {
-                $('#status').text("Upload Aborted!");
-            }
-        });
-        document.addEventListener("DOMContentLoaded", function() {
-            // 获取关闭按钮
-            var closeButton = document.querySelector('.close');
-            // 获取模态框元素
-            var modal = document.getElementById('resultsModal');
-
-            // 当点击关闭按钮时，隐藏模态框
-            closeButton.addEventListener('click', function() {
-                modal.style.display = 'none';
-                // 刷新页面
-                location.reload();
-            });
+            toggleProgress(false);
+            setDropOverlayVisible(false);
         });
     </script>
-    </body>
-
-</html>
-
+</body>
 </html>
