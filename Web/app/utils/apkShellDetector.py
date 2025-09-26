@@ -2,7 +2,6 @@ import os
 import zipfile
 
 
-
 class APKShellDetector:
     """
     APK 加壳加固分析类，负责分析APK采用哪种加固方案
@@ -35,7 +34,7 @@ class APKShellDetector:
         """
         检测APK是否使用了加固技术，并打印结果
         """
-        shell = "unknow"
+        shell = "unknown"
         name_list = self.read_zip_files()
         flags = self.match_shell(name_list)
         if flags:

@@ -1,116 +1,141 @@
 .modal {
     display: none;
     position: fixed;
-    z-index: 1000;
-    left: 0;
-    top: 0;
-    width: 80%;
-    height: 80%;
-    overflow: auto;
-    /* 允许整个模态窗口滚动 */
-    background-color: rgba(0, 0, 0, 0.4);
+    inset: 0;
+    z-index: 1100;
+    align-items: center;
+    justify-content: center;
+    padding: 32px 16px;
+    background: rgba(10, 14, 32, 0.72);
+    backdrop-filter: blur(6px);
+}
+
+.modal.is-visible {
+    display: flex;
 }
 
 .modal-content {
-    background-color: #676161;
-    margin: 5% auto;
-    /* 调整为更小的上边距 */
-    padding: 20px;
-    border: 1px solid #888;
-    width: 60%;
-    /* 缩小宽度 */
-    height: 80%;
-    /* 设置高度 */
+    position: relative;
+    width: min(720px, 100%);
+    max-height: 80vh;
+    border-radius: 20px;
+    background: linear-gradient(135deg, rgba(32, 38, 67, 0.96), rgba(16, 20, 45, 0.96));
+    box-shadow: 0 35px 60px rgba(5, 8, 25, 0.45);
+    color: #f5f7ff;
+    padding: 28px 32px 36px;
+    overflow: hidden;
+}
+
+.modal-body {
+    max-height: calc(80vh - 64px);
     overflow-y: auto;
-    /* 在内容区域添加滚动条 */
+    padding-right: 8px;
+}
+
+.modal-title {
+    margin-top: 0;
+    margin-bottom: 20px;
+    font-size: 1.6rem;
+    font-weight: 700;
 }
 
 .close {
-    color: black;
-    float: right;
-    font-size: 28px;
-    font-weight: bold;
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    border: 0;
+    background: rgba(245, 247, 255, 0.08);
+    color: #f5f7ff;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    font-size: 24px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 150ms ease, transform 150ms ease;
 }
 
 .close:hover,
 .close:focus {
-    color: black;
-    text-decoration: none;
-    cursor: pointer;
-}
-
-.result-item {
-    font-size: 16px;
-    padding: 5px 0;
-    border-bottom: 1px solid #ddd;
-}
-
-.result-item:last-child {
-    border-bottom: none;
+    background: rgba(245, 247, 255, 0.16);
+    transform: scale(1.05);
 }
 
 .basic-info {
-    font-size: 18px;
-    font-weight: bold;
-    margin-bottom: 20px;
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 18px;
+    border-bottom: 1px solid rgba(245, 247, 255, 0.08);
+    padding-bottom: 16px;
+}
+
+.basic-info p {
+    margin: 6px 0;
+}
+
+.result-item {
+    background: rgba(245, 247, 255, 0.06);
+    border-radius: 14px;
+    padding: 16px 18px;
+    margin-bottom: 14px;
+    text-align: left;
+    line-height: 1.45;
+}
+
+.result-item:last-child {
+    margin-bottom: 0;
 }
 
 .label {
-    color: black;
-    /* 标签颜色为黑色 */
+    font-weight: 600;
+    color: rgba(245, 247, 255, 0.78);
 }
 
 .value {
-    color: green;
-    /* 值的颜色为绿色 */
-}
-
-.match-rule-label,
-.match-value-label,
-.accuracy-label {
-    color: black;
-    /* 标签颜色 */
+    color: #7df0ff;
+    font-style: normal;
 }
 
 .match-rule-value {
-    color: blue;
-    /* Match Rule值的颜色 */
+    color: #a7b8ff;
 }
 
 .match-value-value {
-    color: green;
-    /* Match Value值的颜色 */
+    color: #7df0ff;
 }
 
 .accuracy-value {
-    color: red;
-    /* Accuracy值的颜色 */
+    color: #ff9f68;
 }
 
-.label {
-    font-weight: bold;
-    /* 加粗标签 */
+.result-message {
+    padding: 14px 16px;
+    border-radius: 12px;
+    margin-bottom: 12px;
+    text-align: left;
 }
 
-.value {
-    font-style: italic;
-    /* 倾斜值的文本 */
+.result-message.neutral {
+    background: rgba(125, 240, 255, 0.12);
+    color: #d1f6ff;
 }
 
-#uploadFile {
-    display: none;
-    /* 隐藏原始的文件输入元素 */
+.result-message.warning {
+    background: rgba(255, 159, 104, 0.16);
+    color: #ffd7c0;
 }
 
-.fileUpload {
-    cursor: pointer;
-    /* 添加手型光标 */
-    background-color: #f8f9fa;
-    /* 背景色 */
-    border: 1px solid #ccc;
-    /* 边框 */
-    padding: 10px 20px;
-    /* 内边距 */
-    text-align: center;
-    /* 文本居中 */
+.result-message.error {
+    background: rgba(255, 106, 131, 0.18);
+    color: #ffd4dc;
+}
+
+@media (max-width: 600px) {
+    .modal-content {
+        padding: 24px 20px 28px;
+    }
+
+    .modal-body {
+        max-height: calc(80vh - 58px);
+    }
 }

@@ -4,10 +4,22 @@ import shutil
 import zipfile
 import hashlib
 import subprocess
-from config import *
+import importlib.util
+from pathlib import Path
+
+if __package__:
+    from .config import *  # type: ignore
+else:
+    _config_path = Path(__file__).with_name("config.py")
+    _spec = importlib.util.spec_from_file_location("utils.config", _config_path)
+    if _spec is None or _spec.loader is None:
+        raise ImportError(f"Cannot load config module from {_config_path}")
+    _config = importlib.util.module_from_spec(_spec)
+    _spec.loader.exec_module(_config)
+    globals().update({name: getattr(_config, name) for name in dir(_config) if not name.startswith("_")})
+
 from tqdm import tqdm
 from queue import Queue
-from pathlib import Path
 from loguru import logger
 from androguard.misc import AnalyzeAPK
 from concurrent.futures import ThreadPoolExecutor, as_completed

@@ -1,266 +1,217 @@
-/*
- * Globals
- */
-
-/* Links */
-a,
-a:focus,
-a:hover {
-  color: #fff;
-}
-
-/* Custom default button */
-.btn-default,
-.btn-default:hover,
-.btn-default:focus {
-  color: #333;
-  text-shadow: none; /* Prevent inheritance from `body` */
-  background-color: #fff;
-  border: 1px solid #fff;
-}
-
-
-/*
- * Base structure
- */
-
+/* Global layout */
 html,
 body {
   height: 100%;
-  background: linear-gradient(to left, #00efe4, #2d47ff);
-}
-body {
-  color: #fff;
-  text-align: center;
-  text-shadow: 0 1px 3px rgba(0,0,0,.5);
+  margin: 0;
 }
 
-/* Extra markup and styles for table-esque vertical and horizontal centering */
+body.home-body {
+  font-family: 'Source Sans Pro', 'Tahoma', sans-serif;
+  color: #f5f7ff;
+  background: radial-gradient(circle at top left, rgba(0, 239, 228, 0.65), rgba(45, 71, 255, 0.85)), #1a2141;
+  display: flex;
+  justify-content: center;
+  align-items: stretch;
+}
+
 .site-wrapper {
-  display: table;
+  display: flex;
+  flex-direction: column;
   width: 100%;
-  height: 100%; /* For at least Firefox */
-  min-height: 100%;
-  -webkit-box-shadow: inset 0 0 100px rgba(0,0,0,.5);
-          box-shadow: inset 0 0 100px rgba(0,0,0,.5);
+  max-width: 1040px;
+  padding: 32px 20px 48px;
+  margin: auto;
 }
-.site-wrapper-inner {
-  display: table-cell;
-  vertical-align: top;
+
+.masthead .inner,
+.mastfoot .inner {
+  text-align: center;
 }
+
+.brand-title {
+  margin: 0;
+  font-size: clamp(2rem, 5vw, 3rem);
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.brand-tagline {
+  margin: 12px auto 0;
+  max-width: 640px;
+  font-size: clamp(1rem, 2.5vw, 1.25rem);
+  color: rgba(245, 247, 255, 0.82);
+}
+
 .cover-container {
-  margin-right: auto;
-  margin-left: auto;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-/* Padding for spacing */
-.inner {
-  padding: 30px;
-  z-index: 950;
+.inner.cover {
+  width: 100%;
+  display: flex;
+  justify-content: center;
 }
 
-
-/*
- * Header
- */
-.masthead-brand {
-  margin-top: 10px;
-  margin-bottom: 10px;
+.upload-card {
+  width: min(640px, 100%);
+  background: rgba(8, 14, 37, 0.72);
+  backdrop-filter: blur(18px);
+  border-radius: 24px;
+  padding: 40px 32px;
+  box-shadow: 0 30px 60px rgba(11, 22, 58, 0.4);
+  text-align: center;
 }
 
-.masthead-nav > li {
-  display: inline-block;
-}
-.masthead-nav > li + li {
-  margin-left: 20px;
-}
-.masthead-nav > li > a {
-  padding-right: 0;
-  padding-left: 0;
-  font-size: 16px;
-  font-weight: bold;
-  color: #fff; /* IE8 proofing */
-  color: rgba(255,255,255,.95);
-  border-bottom: 2px solid transparent;
-}
-.masthead-nav > li > a:hover,
-.masthead-nav > li > a:focus {
-  background-color: transparent;
-  border-bottom-color: #a9a9a9;
-  border-bottom-color: rgba(255,255,255,.25);
-}
-.masthead-nav > .active > a,
-.masthead-nav > .active > a:hover,
-.masthead-nav > .active > a:focus {
-  color: #fff;
-  border-bottom-color: #fff;
+.card-title {
+  margin: 0;
+  font-size: clamp(1.6rem, 4vw, 2.4rem);
+  font-weight: 700;
 }
 
-@media (min-width: 768px) {
-  .masthead-brand {
-    float: left;
-  }
-  .masthead-nav {
-    float: right;
-  }
+.card-subtitle {
+  margin: 12px auto 28px;
+  max-width: 460px;
+  font-size: 1.05rem;
+  color: rgba(245, 247, 255, 0.72);
 }
 
-
-/*
- * Cover
- */
-
-.cover {
-  padding: 0 20px;
-}
-.cover .btn-lg {
-  padding: 10px 20px;
-  font-weight: bold;
+.upload-form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
 }
 
-
-/*
- * Footer
- */
-
-.mastfoot {
-  color: #999; /* IE8 proofing */
-  color: rgba(255,255,255,.86);
-}
-
-
-/*
- * Affix and center
- */
-
-@media (min-width: 768px) {
-  /* Pull out the header and footer */
-  .masthead {
-    position: fixed;
-    top: 0;
-  }
-  .mastfoot {
-    position: fixed;
-    bottom: 0;
-  }
-  /* Start the vertical centering */
-  .site-wrapper-inner {
-    vertical-align: middle;
-  }
-  /* Handle the widths */
-  .masthead,
-  .mastfoot,
-  .cover-container {
-    width: 100%; /* Must be percentage or pixels for horizontal alignment */
-  }
-}
-
-@media (min-width: 992px) {
-  .masthead,
-  .mastfoot,
-  .cover-container {
-    width: 700px;
-  }
-}
- div.file_res {
-	width: 600px;
-    padding-left: 30px;
-	position: relative;
+.upload-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
 }
 
 .fileUpload {
-	position: relative;
-	overflow: hidden;
-	margin: 10px;
- 
-}
-.fileUpload input {
-	position: absolute;
-	top: 0;
-	right: 0;
-	margin: 0;
-	padding: 0;
-	font-size: 20px;
-	cursor: pointer;
-	opacity: 0;
-	filter: alpha(opacity=0);
+  position: relative;
+  overflow: hidden;
+  padding: 14px 28px;
+  border-radius: 999px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25);
 }
 
-/* Custom */ 
-
-/* Full screen drag and drop */
-
-
-div#drop {
-    position: fixed;
-    top: 0;
-    left: 0;
-    z-index: 9999999999;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
-    transition: visibility 175ms, opacity 175ms;
-    display: table;
-    text-shadow: 1px 1px 2px #000;
-    color: #fff;
-    background: rgba(0, 0, 0, 0.45);
-    font: bold 42px Source Sans Pro, Tahoma, sans-serif;
+.fileUpload span.fas {
+  margin-right: 8px;
+  font-size: 1.1em;
 }
-div#textnode {
-    display: table-cell;
-    text-align: center;
-    vertical-align: middle;
-    transition: font-size 175ms;
+
+#uploadFile {
+  display: none;
 }
-/* TOP NAV */
 
-@media (min-width: 768px) {
-  .navbar-brand.abs
-      {
-          position: absolute;
-          width: auto;
-          left: 50%;
-          transform: translateX(-50%);
-          text-align: center;
-          font-size: 20px;
-      }
-  }
-  
+.upload-hint {
+  margin: 0;
+  font-size: 0.95rem;
+  color: rgba(245, 247, 255, 0.68);
+}
 
-/* PROGRESS BAR */
+#status {
+  min-height: 1.5em;
+  margin: 0;
+  color: #f6f7ff;
+}
 
 progress {
-  width: 400px;
-
-  margin: 25px auto;
-  display: block;
-  -webkit-appearance: none;
-
-   border: 0;
-    height: 18px;
-    border-radius: 9px;
+  width: clamp(240px, 50vw, 320px);
+  height: 16px;
+  border-radius: 12px;
+  border: 0;
+  background-color: rgba(255, 255, 255, 0.12);
 }
 
 progress::-webkit-progress-bar {
-  background: black;
-  border-radius: 50px;
-  padding: 2px;
-  box-shadow: 0 1px 0px 0 rgba(255, 255, 255, 0.2);
+  border-radius: 12px;
+  background-color: rgba(255, 255, 255, 0.12);
 }
 
 progress::-webkit-progress-value {
-  border-radius: 50px;
-  box-shadow: inset 0 1px 1px 0 rgba(255, 255, 255, 0.4);
-  background:
-    -webkit-linear-gradient(45deg, transparent, transparent 33%, rgba(0, 0, 0, 0.1) 33%, rgba(0, 0, 0, 0.1) 66%, transparent 66%),
-    -webkit-linear-gradient(top, rgba(255, 255, 255, 0.25), rgba(0, 0, 0, 0.2)),
-    -webkit-linear-gradient(left, #66ccff, #3399ff);
-
-  background-size: 25px 14px, 100% 100%, 100% 100%;
-  -webkit-animation: move 5s linear 0 infinite;
+  border-radius: 12px;
+  background: linear-gradient(90deg, #66ccff, #4f6bff);
 }
 
-@-webkit-keyframes move {
-  0% {background-position: 0px 0px, 0 0, 0 0}
-  100% {background-position: -100px 0px, 0 0, 0 0}
+progress::-moz-progress-bar {
+  border-radius: 12px;
+  background: linear-gradient(90deg, #66ccff, #4f6bff);
+}
+
+.mastfoot {
+  margin-top: 32px;
+  font-size: 0.95rem;
+  color: rgba(245, 247, 255, 0.7);
+}
+
+.loading {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(12, 17, 34, 0.48);
+  z-index: 1040;
+  transition: opacity 180ms ease-in-out;
+}
+
+.loading.hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.hidden {
+  display: none !important;
+}
+
+.drop-overlay {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(12, 17, 34, 0.85);
+  color: #f5f7ff;
+  text-shadow: 0 4px 12px rgba(0, 0, 0, 0.6);
+  font-size: clamp(2rem, 6vw, 3.5rem);
+  font-weight: 700;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 150ms ease, visibility 150ms ease;
+  z-index: 1030;
+}
+
+.drop-overlay.is-visible {
+  opacity: 1;
+  visibility: visible;
+}
+
+body.modal-open {
+  overflow: hidden;
+}
+
+@media (max-width: 768px) {
+  .site-wrapper {
+    padding: 24px 16px 32px;
+  }
+
+  .upload-card {
+    padding: 32px 22px;
+  }
+
+  .upload-actions {
+    width: 100%;
+  }
+
+  .fileUpload {
+    width: 100%;
+  }
 }

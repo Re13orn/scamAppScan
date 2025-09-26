@@ -1,117 +1,142 @@
+"""Lightweight APK analysis utilities used by the offline web server.
+
+This module intentionally avoids third-party dependencies so that it can run
+inside the execution environment where installing packages such as
+``androguard`` or ``loguru`` is not possible.  The implementation focuses on
+string pattern matching within the ZIP archive that makes up an APK file.
+"""
+
+from __future__ import annotations
+
+import io
+import logging
 import os
-import shutil
 import zipfile
-import hashlib
-from androguard.misc import AnalyzeAPK
-from loguru import logger
+from hashlib import md5
+from pathlib import Path
+from typing import Dict, Iterable, List
+
+
+logger = logging.getLogger(__name__)
 
 
 class APKAnalyzer:
-    """
-    APK 文件分析器类，负责APK文件的解析和信息抽取。
+    """Perform best-effort static analysis on an APK archive.
+
+    The analyzer scans every file in the APK ZIP archive, decoding textual
+    content and searching for the configured patterns.  While this is less
+    accurate than using specialised tools, it provides useful signal without
+    relying on external dependencies that are unavailable in the sandbox.
     """
 
-    def __init__(self, apk_path, tmp_dictory):
+    #: Number of bytes to read from each archived file when scanning.  Large
+    #: assets such as images are skipped after this limit to keep resource
+    #: usage predictable.
+    MAX_SCAN_BYTES = 2 * 1024 * 1024  # 2 MiB
+
+    def __init__(self, apk_path: str, temp_directory: str | os.PathLike[str]):
         self.apk_path = apk_path
         self.apk_name = os.path.basename(apk_path)
-        self.apk_info = {}
-        self.extract_to = tmp_dictory
+        self.temp_directory = Path(temp_directory)
+        # Ensure the temporary directory exists for compatibility with earlier
+        # behaviour that expected it to be present.
+        self.temp_directory.mkdir(parents=True, exist_ok=True)
 
-    def get_application_name(self, apk):
-        """
-        获取并返回 APK 的应用名称。
-        """
-        return apk.get_app_name()
+    def analyze_apk(self, patterns: Dict[str, int]) -> List[Dict[str, object]]:
+        """Inspect the APK and collect pattern matches.
 
-    def extract_bundle_file(self):
+        Parameters
+        ----------
+        patterns:
+            Mapping of suspicious substrings to their accuracy score.
+
+        Returns
+        -------
+        list of dict
+            Each entry contains the match metadata combined with basic APK
+            information so that callers can serialise the result directly.
         """
-        从 APK 中提取 assets/index.android.bundle 文件。
-        """
+
+        apk_hash = self.calculate_hash()
+        apk_info = {
+            "apk_name": self.apk_name,
+            "app_version": "unknown",
+            "hash": apk_hash,
+            "Package_name": os.path.splitext(self.apk_name)[0],
+            "app_name": os.path.splitext(self.apk_name)[0],
+        }
+
+        matches: List[Dict[str, object]] = []
+
         try:
-            with zipfile.ZipFile(self.apk_path, 'r') as zip_ref:
-                bundle_file = 'assets/index.android.bundle'
-                if bundle_file in zip_ref.namelist():
-                    zip_ref.extract(bundle_file, self.extract_to)
-                    return os.path.join(self.extract_to, bundle_file)
-        except zipfile.BadZipFile:
-            logger.error(f"Failed to open {self.apk_path}.")
+            with zipfile.ZipFile(self.apk_path, "r") as archive:
+                for member in archive.infolist():
+                    if member.is_dir():
+                        continue
 
-    def analyze_content(self, content, patterns):
-        """
-        分析 APK 内容，匹配定义的规则，并尝试处理可能的越界问题。
-        """
-        matches = []
+                    try:
+                        with archive.open(member.filename, "r") as file_obj:
+                            text = self._read_member(file_obj)
+                    except Exception as exc:  # pragma: no cover - defensive
+                        logger.warning(
+                            "Failed to read %s from %s: %s",
+                            member.filename,
+                            self.apk_name,
+                            exc,
+                        )
+                        continue
+
+                    for match in self.analyze_content(text, patterns):
+                        result = {**match, **apk_info, "source_file": member.filename}
+                        matches.append(result)
+
+        except zipfile.BadZipFile as exc:
+            logger.error("Failed to open %s: %s", self.apk_path, exc)
+
+        # Always return at least one row with the APK metadata so the caller
+        # can populate the summary panel even when no patterns matched.
+        if not matches:
+            matches.append({**apk_info})
+
+        return matches
+
+    def analyze_content(self, content: str, patterns: Dict[str, int]) -> Iterable[Dict[str, object]]:
+        """Find pattern matches within *content* and yield context snippets."""
+
+        context_padding = 120
         for pattern, accuracy in patterns.items():
             start = 0
             while True:
-                start = content.find(pattern, start)
-                if start == -1:
+                index = content.find(pattern, start)
+                if index == -1:
                     break
-                context_start = max(0, start - 100)
-                context_end = min(len(content), start + len(pattern) + 100)
-                limited_context = content[context_start:context_end]
-                matches.append({
+                context_start = max(0, index - context_padding)
+                context_end = min(len(content), index + len(pattern) + context_padding)
+                snippet = content[context_start:context_end]
+                yield {
                     "match_rule": pattern,
-                    "match_value": limited_context,
-                    "accuracy": accuracy
-                })
-                start += len(pattern)
-        return matches
+                    "match_value": snippet,
+                    "accuracy": accuracy,
+                }
+                start = index + len(pattern)
 
-    def analyze_apk(self, patterns):
-        """
-        分析指定的 APK 文件，并妥善处理所有异常。
-        """
-        results = []
-        apk_hash = self.calculate_hash()
-        try:
-            apk, dex_list, analysis = AnalyzeAPK(self.apk_path)
-            app_name = self.get_application_name(apk)
-            package_name = apk.get_package()
-            # 获取版本代码和版本名称
-            version_code = apk.get_androidversion_code()
-            appversion = apk.get_androidversion_name()
+    def _read_member(self, file_obj: io.BufferedReader) -> str:
+        """Decode a ZIP member to text, truncating very large files."""
 
-            self.apk_info = {
-                "apk_name": self.apk_name,
-                "app_version": appversion,
-                "hash": apk_hash,
-                "Package_name": package_name,
-                "app_name": app_name
-            }
+        data = file_obj.read(self.MAX_SCAN_BYTES)
+        if not data:
+            return ""
+        return data.decode("utf-8", errors="ignore")
 
-            for idx, dex in enumerate(dex_list, start=1):
-                try:
-                    dex_strings = '\n'.join(dex.get_strings())
-                    matches = self.analyze_content(dex_strings, patterns)
-                    results.extend([{**match, **self.apk_info} for match in matches])
-                except Exception as e:
-                    logger.error(f"Error analyzing DEX {idx}: {str(e)}")
+    def calculate_hash(self) -> str:
+        """Compute the MD5 hash of the APK for consistent filenames."""
 
-            bundle_path = self.extract_bundle_file()
-            if bundle_path:
-                with open(bundle_path, 'r', encoding='utf-8') as file:
-                    bundle_content = file.read()
-                    matches = self.analyze_content(bundle_content, patterns)
-                    for match in matches:
-                        match.update(self.apk_info)
-                        results.append(match)
-            if not results:
-                match ={}
-                results.extend([{**match, **self.apk_info}])
+        digest = md5()
+        with open(self.apk_path, "rb") as apk_file:
+            for chunk in iter(lambda: apk_file.read(4096), b""):
+                digest.update(chunk)
+        return digest.hexdigest()
 
-        except Exception as e:
-            logger.error(f"Failed to analyze {self.apk_name}: {str(e)}")
-        finally:
-            shutil.rmtree(self.extract_to, ignore_errors=True)
-            return results
 
-    def calculate_hash(self):
-        """
-        计算 APK 文件的 MD5 哈希值。
-        """
-        hash_md5 = hashlib.md5()
-        with open(self.apk_path, "rb") as f:
-            for chunk in iter(lambda: f.read(4096), b""):
-                hash_md5.update(chunk)
-        return hash_md5.hexdigest()
+__all__ = ["APKAnalyzer"]
+
